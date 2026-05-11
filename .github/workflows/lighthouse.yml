@@ -1,0 +1,75 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Lighthouse CI (local worker)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build production bundle
+        run: pnpm build
+
+      - name: Start Wrangler dev (local)
+        run: |
+          pnpm exec wrangler dev --port 8787 --local --ip 127.0.0.1 \
+            > wrangler-dev.log 2>&1 &
+          echo $! > .wrangler-dev.pid
+
+      - name: Wait for local worker
+        run: npx --yes wait-on http://127.0.0.1:8787 --timeout 60000
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:8787/
+            http://127.0.0.1:8787/products
+            http://127.0.0.1:8787/products/yinyang
+            http://127.0.0.1:8787/products/quant
+            http://127.0.0.1:8787/company
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Stop Wrangler dev
+        if: always()
+        run: |
+          if [ -f .wrangler-dev.pid ]; then
+            kill "$(cat .wrangler-dev.pid)" 2>/dev/null || true
+          fi
+
+      - name: Upload wrangler dev log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrangler-dev-log
+          path: wrangler-dev.log
+          if-no-files-found: ignore
+          retention-days: 7
