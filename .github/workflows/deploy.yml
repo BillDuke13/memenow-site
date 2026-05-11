@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run wrangler deploy with --dry-run (no production push)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: wrangler deploy → Cloudflare Workers
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+      url: https://memenow.xyz
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build production bundle
+        run: pnpm build
+
+      - name: Read wrangler version
+        id: wrangler-version
+        run: |
+          version="$(node -p "require('./package.json').devDependencies.wrangler.replace(/^[\^~]/, '')")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: pnpm
+          wranglerVersion: ${{ steps.wrangler-version.outputs.version }}
+          command: ${{ inputs.dry_run && 'deploy --dry-run --outdir=.wrangler/dry-run' || 'deploy' }}

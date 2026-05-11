@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>CI / CD — memenow-site documentation</title>
+		<meta
+			name="description"
+			content="GitHub Actions pipelines for memenow-site: continuous integration, Cloudflare Workers deployment, CodeQL, Lighthouse, and dependency updates."
+		/>
+		<link rel="stylesheet" href="./_shared.css" />
+	</head>
+	<body>
+		<aside class="toc">
+			<div class="brand">memenow-site</div>
+			<div class="subtitle">Documentation</div>
+			<nav>
+				<a href="./index.html">Overview</a>
+				<span class="section">Engineering</span>
+				<a href="./architecture.html">Architecture</a>
+				<a href="./routes.html">Routes &amp; content</a>
+				<a href="./components.html">Components</a>
+				<a href="./styling.html">Styling &amp; tokens</a>
+				<a href="./motion.html">Motion &amp; reveal</a>
+				<span class="section">Operations</span>
+				<a href="./deployment.html">Deployment</a>
+				<a class="current" href="./ci-cd.html">CI / CD</a>
+				<a href="./brand-assets.html">Brand assets</a>
+			</nav>
+		</aside>
+
+		<main class="doc">
+			<header class="title">
+				<div class="eyebrow">Operations</div>
+				<h1>CI / CD</h1>
+				<p class="lede">
+					Every pull request runs the same gate you run locally — lint, type and Svelte diagnostics,
+					Vitest — plus static security analysis and a Lighthouse audit. Merging to
+					<code>main</code> deploys the Worker to Cloudflare automatically.
+				</p>
+			</header>
+
+			<h2>Pipeline at a glance</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Workflow</th>
+						<th>File</th>
+						<th>Triggers</th>
+						<th>Purpose</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>CI</td>
+						<td><code>.github/workflows/ci.yml</code></td>
+						<td><code>pull_request</code>, <code>push: main</code></td>
+						<td>
+							Parallel <code>lint</code>, <code>check</code>, <code>test</code>;
+							<code>build</code> verifies the Worker bundle.
+						</td>
+					</tr>
+					<tr>
+						<td>Deploy</td>
+						<td><code>.github/workflows/deploy.yml</code></td>
+						<td><code>push: main</code>, <code>workflow_dispatch</code></td>
+						<td>
+							<code>pnpm build</code> then <code>wrangler deploy</code> against the
+							<code>production</code> GitHub Environment.
+						</td>
+					</tr>
+					<tr>
+						<td>CodeQL</td>
+						<td><code>.github/workflows/codeql.yml</code></td>
+						<td><code>pull_request</code>, <code>push: main</code>, weekly cron</td>
+						<td>
+							JavaScript / TypeScript static analysis (<code>build-mode: none</code>) with the
+							<code>security-and-quality</code> query suite.
+						</td>
+					</tr>
+					<tr>
+						<td>Lighthouse</td>
+						<td><code>.github/workflows/lighthouse.yml</code></td>
+						<td><code>pull_request</code>, <code>workflow_dispatch</code></td>
+						<td>
+							Boots the built Worker via <code>wrangler dev --local</code> and runs Lighthouse CI
+							against the canonical routes. Budgets in <code>lighthouserc.json</code>.
+						</td>
+					</tr>
+					<tr>
+						<td>Dependabot</td>
+						<td><code>.github/dependabot.yml</code></td>
+						<td>weekly cron</td>
+						<td>
+							Grouped <code>npm</code> (pnpm-aware) and <code>github-actions</code> updates with
+							ecosystem-aware groupings (SvelteKit, Tailwind, Cloudflare, lint, types).
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2>Required secrets</h2>
+			<p>
+				The deploy workflow is the only path that needs Cloudflare credentials. Both secrets are
+				provided at the <strong>GitHub organization</strong> level and inherited automatically by
+				this repository — no repo-level configuration is required.
+			</p>
+			<table>
+				<thead>
+					<tr>
+						<th>Secret</th>
+						<th>Scope</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>CLOUDFLARE_API_TOKEN</code></td>
+						<td>Organization</td>
+						<td>
+							Custom token with <code>Account → Workers Scripts: Edit</code>,
+							<code>Account → Account Settings: Read</code>, <code>User → Memberships: Read</code>.
+							Scope to the production account only.
+						</td>
+					</tr>
+					<tr>
+						<td><code>CLOUDFLARE_ACCOUNT_ID</code></td>
+						<td>Organization</td>
+						<td>The Cloudflare account ID that owns the <code>memenow-site</code> Worker.</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2>Production environment</h2>
+			<p>
+				<code>deploy.yml</code> targets a GitHub Environment named <code>production</code>. The
+				Worker serves both <code>https://memenow.xyz</code> (apex) and
+				<code>https://www.memenow.xyz</code>; the Environment URL records the apex as the canonical
+				deployment link. The Environment is used for GitHub Deployments tracking; no required
+				reviewer is configured today, so the merge-to-<code>main</code> path deploys without manual
+				approval. Add a required reviewer in <em>Settings → Environments → production</em> if a
+				human gate becomes necessary.
+			</p>
+			<p>
+				<code>concurrency: deploy-production</code> with
+				<code>cancel-in-progress: false</code> ensures consecutive deploys serialize rather than
+				clobber each other.
+			</p>
+
+			<h2>Quality gates on every pull request</h2>
+			<ol>
+				<li><strong>Lint</strong> — <code>prettier --check .</code> then <code>eslint .</code>.</li>
+				<li>
+					<strong>Type / Svelte check</strong> — <code>svelte-kit sync</code> followed by
+					<code>svelte-check</code> against <code>tsconfig.json</code> (<code>strict</code> +
+					<code>checkJs</code>).
+				</li>
+				<li>
+					<strong>Vitest</strong> — both projects (<code>client</code> browser mode and
+					<code>server</code> Node), with the Playwright Chromium binary cached under
+					<code>~/.cache/ms-playwright</code>.
+				</li>
+				<li>
+					<strong>Build</strong> — fans in from the three checks and runs <code>pnpm build</code> to
+					confirm the Cloudflare Worker bundle assembles. Bundle size is logged to the run summary.
+				</li>
+				<li>
+					<strong>CodeQL</strong> — JavaScript / TypeScript analysis with the
+					<code>security-and-quality</code> suite.
+				</li>
+				<li>
+					<strong>Lighthouse CI</strong> — three runs per URL, desktop preset, budgets defined as
+					<code>warn</code>-level assertions until the baseline is established.
+				</li>
+			</ol>
+
+			<h2>Caching</h2>
+			<ul>
+				<li>
+					<strong>pnpm store</strong> — handled by <code>actions/setup-node@v4</code> with
+					<code>cache: pnpm</code>; the cache key follows <code>pnpm-lock.yaml</code>.
+				</li>
+				<li>
+					<strong>Playwright Chromium</strong> — explicit <code>actions/cache@v4</code> over
+					<code>~/.cache/ms-playwright</code>, keyed by <code>pnpm-lock.yaml</code> so a lockfile
+					change invalidates the binary.
+				</li>
+				<li>
+					<strong>SvelteKit build output</strong> — not cached. <code>svelte-kit sync</code> is
+					cheap, and stale caches risk drifting against <code>tsconfig.json</code> references.
+				</li>
+			</ul>
+
+			<h2>Lighthouse budgets</h2>
+			<p>
+				<code>lighthouserc.json</code> declares performance, accessibility, best-practices, and SEO
+				assertions plus concrete numeric budgets: LCP &lt; 2500 ms, CLS &lt; 0.1, TBT &lt; 200 ms,
+				FCP &lt; 1800 ms, total transfer &lt; 1 MB. All assertions are <code>warn</code>-level for
+				now so flaky CI runs do not block merges; promote to <code>error</code> after two to three
+				calm weeks of green runs.
+			</p>
+
+			<h2>Manual triggers</h2>
+			<p>
+				The deploy and Lighthouse workflows accept <code>workflow_dispatch</code>. To deploy
+				manually:
+			</p>
+			<pre><code>gh workflow run deploy.yml --ref main
+# or, with a dry run:
+gh workflow run deploy.yml --ref main -f dry_run=true</code></pre>
+			<p>
+				The <code>dry_run</code> input swaps <code>wrangler deploy</code> for
+				<code>wrangler deploy --dry-run --outdir=.wrangler/dry-run</code>, producing the bundle
+				without publishing it.
+			</p>
+
+			<h2>Rollback</h2>
+			<p>Roll back from the latest successful deploy via the Cloudflare dashboard or:</p>
+			<pre><code>wrangler rollback --message "incident-2026-05-11"</code></pre>
+			<p>
+				Alternatively, revert the offending commit on <code>main</code>. The push will retrigger
+				<code>deploy.yml</code> and publish the previous bundle.
+			</p>
+
+			<h2>Failure runbook</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Symptom</th>
+						<th>First action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>ci.yml / lint</code> failing</td>
+						<td>
+							Reproduce with <code>pnpm lint</code>; auto-fix with <code>pnpm format</code> when
+							possible.
+						</td>
+					</tr>
+					<tr>
+						<td><code>ci.yml / check</code> failing</td>
+						<td>
+							Run <code>pnpm exec svelte-kit sync &amp;&amp; pnpm check</code> locally; inspect the
+							Svelte and TypeScript diagnostics.
+						</td>
+					</tr>
+					<tr>
+						<td><code>ci.yml / test</code> flake</td>
+						<td>
+							Download the <code>vitest-failure-artifacts</code> artifact from the run; replay with
+							<code>pnpm test --reporter=verbose</code>.
+						</td>
+					</tr>
+					<tr>
+						<td><code>deploy.yml</code> fails on <code>wrangler deploy</code></td>
+						<td>
+							Check the Cloudflare API token scope and quota; rerun with
+							<code>dry_run=true</code> first; if the bundle exceeds Worker limits, profile with
+							<code>pnpm build</code> locally.
+						</td>
+					</tr>
+					<tr>
+						<td>Lighthouse warns repeatedly on a single page</td>
+						<td>
+							Open the temporary report URL in the action log; treat budget warnings as a
+							recommendation, not a block.
+						</td>
+					</tr>
+					<tr>
+						<td>CodeQL alert</td>
+						<td>
+							Review under <em>Security → Code scanning</em>; if it is a false positive, dismiss
+							with a reason; if real, fix in a follow-up PR.
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2>Local sanity checks before pushing</h2>
+			<pre><code>pnpm lint &amp;&amp; pnpm check &amp;&amp; pnpm test
+# Optional, for Worker, hook, or binding changes:
+pnpm preview</code></pre>
+			<p>These mirror the CI gate exactly. The <code>/verify</code> Claude skill wraps the trio.</p>
+
+			<div class="callout">
+				<strong>Pinning policy</strong>
+				The deploy workflow holds the only credential-bearing action invocation
+				(<code>cloudflare/wrangler-action@v3</code>). If supply-chain hardening becomes a
+				requirement, replace the major tag with the published 40-character commit SHA. Dependabot
+				will continue to surface major-version upgrade PRs in either case.
+			</div>
+
+			<footer class="meta">
+				<span>memenow-site · CI / CD</span>
+				<a href="./brand-assets.html">Next: brand assets →</a>
+			</footer>
+		</main>
+	</body>
+</html>

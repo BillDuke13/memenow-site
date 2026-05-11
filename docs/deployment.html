@@ -21,6 +21,7 @@
 				<a href="./motion.html">Motion &amp; reveal</a>
 				<span class="section">Operations</span>
 				<a class="current" href="./deployment.html">Deployment</a>
+				<a href="./ci-cd.html">CI / CD</a>
 				<a href="./brand-assets.html">Brand assets</a>
 			</nav>
 		</aside>
@@ -49,8 +50,8 @@
 						<td><code>memenow-site</code></td>
 					</tr>
 					<tr>
-						<td>Public host</td>
-						<td><code>memenow.xyz</code></td>
+						<td>Public hosts</td>
+						<td><code>memenow.xyz</code> (apex) and <code>www.memenow.xyz</code></td>
 					</tr>
 					<tr>
 						<td>Build output</td>
@@ -85,13 +86,19 @@
 
 			<h2>Authentication</h2>
 			<p>
-				The deploying user needs a Wrangler session against the Cloudflare account that owns the
-				<code>memenow-site</code> Worker. <code>wrangler login</code> must be run interactively in
-				the terminal — it cannot be automated from a coding agent.
+				For manual deploys the operator needs a Wrangler session against the Cloudflare account that
+				owns the <code>memenow-site</code> Worker. <code>wrangler login</code> must be run
+				interactively in the terminal — it cannot be automated from a coding agent.
 			</p>
 			<pre><code>wrangler whoami
 # if not logged in:
 wrangler login</code></pre>
+			<p>
+				The automated pipeline does not use <code>wrangler login</code>. Instead, the
+				<code>Deploy</code> GitHub Actions workflow consumes the
+				<code>CLOUDFLARE_API_TOKEN</code> and <code>CLOUDFLARE_ACCOUNT_ID</code> organization
+				secrets — see <a href="./ci-cd.html">CI / CD</a>.
+			</p>
 
 			<h2>Pre-deploy verification</h2>
 			<p>
@@ -124,6 +131,11 @@ pnpm test        # vitest --run (client + server projects)</code></pre>
 				This runs <code>pnpm build</code> followed by <code>wrangler deploy</code>. The deploy URL
 				appears in the Wrangler output; capture it and confirm a 200 from <code>/</code>,
 				<code>/sitemap.xml</code>, and the route that motivated the deploy.
+			</p>
+			<p>
+				The same command runs in CI on every push to <code>main</code>. Use the manual path only for
+				incident response or when the GitHub Actions pipeline is degraded — see
+				<a href="./ci-cd.html">CI / CD</a> for the automated flow.
 			</p>
 
 			<div class="callout callout--warn">
