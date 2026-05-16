@@ -140,13 +140,13 @@ Every pull request runs the same gate locally enforced by `pnpm lint && pnpm che
 plus CodeQL static analysis and a Lighthouse audit against the built Worker. Pushing to `main`
 deploys to Cloudflare Workers automatically via `cloudflare/wrangler-action`.
 
-| Workflow                           | Triggers                                                  |
-| ---------------------------------- | --------------------------------------------------------- |
-| `.github/workflows/ci.yml`         | `pull_request`, `push: main` — lint, check, test, build   |
-| `.github/workflows/deploy.yml`     | `push: main`, `workflow_dispatch` — `wrangler deploy`     |
-| `.github/workflows/codeql.yml`     | `pull_request`, `push: main`, weekly cron                 |
-| `.github/workflows/lighthouse.yml` | `pull_request`, `workflow_dispatch` — LH against local DO |
-| `.github/dependabot.yml`           | weekly — grouped `npm` (pnpm) and `github-actions` PRs    |
+| Workflow                           | Triggers                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------ |
+| `.github/workflows/ci.yml`         | `pull_request`, `push: main` — lint, check, test, build                              |
+| `.github/workflows/deploy.yml`     | `push: main`, `workflow_dispatch` — `wrangler deploy`                                |
+| `.github/workflows/codeql.yml`     | `pull_request`, `push: main`, weekly cron                                            |
+| `.github/workflows/lighthouse.yml` | `pull_request`, `workflow_dispatch` — LH against the built Worker via `wrangler dev` |
+| `.github/dependabot.yml`           | weekly — grouped `npm` (pnpm) and `github-actions` PRs                               |
 
 The deploy workflow consumes the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
 organization secrets — no repository-level secret configuration is required. See
