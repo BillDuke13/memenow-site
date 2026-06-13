@@ -34,7 +34,7 @@
 				<div class="eyebrow">Engineering</div>
 				<h1>Styling &amp; tokens</h1>
 				<p class="lede">
-					A two-tone palette (sage green + coral pink + warm white), one display family (Manrope)
+					A two-tone palette (sage green + coral pink + warm white), one display family (Newsreader)
 					and one body family (Inter), and a strict
 					<code>.c-*</code> / <code>.l-*</code> namespacing convention. Every value comes from a CSS
 					custom property — never a literal.
@@ -129,18 +129,37 @@
 				<code>--brand-coral</code> is an alias of <code>--accent-pink</code> reserved for the logo's
 				adjacent signature elements; do not introduce a third coral token.
 			</p>
+			<p>
+				All palette values are authored in <strong>OKLCH</strong> (a perceptually uniform color
+				space that gives even lightness steps and predictable color-mix). The sRGB hex values
+				visible in the table above are approximations for reference; the source of truth is the
+				<code>oklch()</code> literal in <code>tokens.css</code>. Every contrast ratio has been
+				verified against the OKLCH values.
+			</p>
+			<p>
+				On <strong>Display-P3</strong> screens, a wide-gamut accent layer pushes
+				<code>--accent-green</code> and <code>--accent-pink</code> (and their
+				<code>-light</code> variants) past the sRGB chroma ceiling for a richer brand presence. The
+				overrides are declared in a <code>@media (color-gamut: p3)</code> block in
+				<code>tokens.css</code>; they keep the exact lightness and hue of the sRGB fallback, so
+				every contrast ratio is preserved — only chroma grows. Non-P3 engines never see the
+				override.
+			</p>
 
 			<h3>Type</h3>
 			<ul>
 				<li>
-					<strong>Display</strong> — Manrope Variable, with Inter as fallback. Used for hero and
-					chapter titles, ledes, lockup typography. Letter-spacing tightens at display sizes (<code
-						>--ls-display: -0.04em</code
-					>).
+					<strong>Display</strong> — Newsreader Variable (variable font, <code>opsz</code> axis),
+					with system-serif fallbacks (<code>Georgia</code>, <code>Times New Roman</code>). Used for
+					hero and chapter titles, ledes, and lockup typography. The optical-size axis is activated
+					by <code>font-optical-sizing: auto</code> on <code>html</code>, so the typeface
+					automatically uses finer, higher-contrast forms at large display sizes. Letter-spacing
+					tightens at display sizes (<code>--ls-display: -0.04em</code>).
 				</li>
 				<li>
-					<strong>Body</strong> — Inter, 400 / 500 / 600 weights. Used for everything that isn't a
-					heading.
+					<strong>Body</strong> — Inter Variable (variable font, <code>opsz</code> axis), with
+					system-sans fallbacks. Used for everything that isn't a display heading. Like Newsreader,
+					the optical-size axis yields sturdier, more readable forms at small text sizes.
 				</li>
 				<li>
 					<strong>Mono</strong> — JetBrains Mono / IBM Plex Mono / system mono. Used for eyebrow
@@ -211,13 +230,21 @@
 						</td>
 					</tr>
 					<tr>
-						<td><code>.world-layer</code> / <code>.world-layer__taichi</code></td>
+						<td>
+							<code>.world-layer</code> / <code>.world-layer__taichi</code> /
+							<code>.world-layer__grain</code>
+						</td>
 						<td><code>lib/styles/world-layer.css</code></td>
 						<td>
 							The fixed underlay that renders behind every route. <code>.world-layer</code> paints
-							the active fog and <code>.world-layer__taichi</code> the Tai Chi geometry. It reads
+							the active fog, <code>.world-layer__taichi</code> the Tai Chi geometry with
+							scroll-driven parallax drift, and <code>.world-layer__grain</code> a faint static film
+							grain (inline SVG <code>feTurbulence</code>) tiled over the underlay for texture. The
+							grain is hidden under <code>prefers-reduced-transparency: reduce</code> and
+							<code>forced-colors: active</code>. The layer reads
 							<code>--scene-fog-active</code> from <code>scene.css</code> so navigating between
-							routes shifts the fog without remounting anything.
+							routes shifts the fog without remounting anything. Also declares the cross-page View
+							Transition styles (<code>::view-transition-old/new(root)</code> crossfade).
 						</td>
 					</tr>
 					<tr>
@@ -258,6 +285,31 @@
 				choice (<code>localStorage.memenow.theme</code>) and system preference before SvelteKit
 				hydrates so there is no light-flash on dark systems. <code>ThemeSwitch.svelte</code> writes
 				both the attribute and the storage key when the user toggles.
+			</p>
+
+			<h2>In-page motion toggle (<code>data-motion</code>)</h2>
+			<p>
+				<code>MotionSwitch.svelte</code> in the floating dock lets users override the OS
+				<code>prefers-reduced-motion</code> setting. It writes <code>data-motion="full"</code> or
+				<code>data-motion="reduced"</code> on <code>&lt;html&gt;</code>, persists the choice to
+				<code>localStorage['memenow.motion']</code>, and starts or stops Lenis accordingly.
+			</p>
+			<p>
+				The attribute is the single runtime source of truth once scripting is active: when
+				<code>data-motion</code> is present it overrides the OS query in both CSS and JS. The
+				deliberate design is that <code>&lt;html&gt;</code> ships <em>no</em> static
+				<code>data-motion</code> in the SSR HTML, so the CSS
+				<code>:root:not([data-motion])</code> selectors can fall back to the OS media query when
+				scripting is off. The <code>app.html</code> boot script writes the attribute before first
+				paint on all subsequent visits where a stored preference exists.
+			</p>
+			<p>
+				The matching CSS resets in <code>tokens.css</code>, <code>components.css</code>,
+				<code>world-layer.css</code>, and <code>layout.css</code> respond to both triggers —
+				<code>:root:not([data-motion])</code> guards the OS query fallback;
+				<code>:root[data-motion='reduced']</code> governs the toggle. The JS gate in
+				<code>motion.ts</code> (<code>prefersReducedMotion()</code>) mirrors this precedence: the
+				attribute wins whenever present, falling back to <code>window.matchMedia</code> otherwise.
 			</p>
 
 			<div class="callout callout--warn">
