@@ -100,8 +100,10 @@
 				</li>
 				<li>
 					<strong>Reduced motion is honored everywhere.</strong> Every animation utility — Lenis,
-					<code>reveal</code>, <code>magnetic</code>, the matching CSS — has a
-					<code>prefers-reduced-motion: reduce</code> branch.
+					<code>reveal</code>, <code>magnetic</code>, cross-page View Transitions, the matching CSS
+					— responds to both the OS <code>prefers-reduced-motion: reduce</code> query and the
+					in-page <code>MotionSwitch</code> toggle (<code>data-motion</code> on
+					<code>&lt;html&gt;</code>).
 				</li>
 				<li>
 					<strong>pnpm only.</strong> <code>engine-strict=true</code> is set, and

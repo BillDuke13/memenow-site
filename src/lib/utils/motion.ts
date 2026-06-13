@@ -6,14 +6,50 @@
  * reveals.
  */
 
-let lenisInstance: { destroy: () => void; raf: (t: number) => void } | null = null;
+let lenisInstance: { destroy: () => void; stop: () => void; start: () => void } | null = null;
+
+/**
+ * Resolve whether motion should be suppressed. The in-page toggle writes
+ * `data-motion` on <html> (app.html boot script + MotionSwitch); when that
+ * attribute is present it is the single source of truth and can both honor and
+ * override the OS setting. With no attribute (scripting off, or before the boot
+ * script runs) we fall back to the `prefers-reduced-motion` media query. This
+ * mirrors the CSS precedence in tokens.css exactly: the attribute wins whenever
+ * it is present.
+ */
+export function prefersReducedMotion(): boolean {
+	if (typeof window === 'undefined') return false;
+	const pref = document.documentElement.getAttribute('data-motion');
+	if (pref === 'reduced') return true;
+	if (pref === 'full') return false;
+	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * True only while a cross-page View Transition is swapping the DOM. The root
+ * layout sets it around `document.startViewTransition`; the `reveal` action
+ * reads it at mount — deep inside the transition's update callback — so an
+ * entrance flagged `restDuringViewTransition` presents at rest instead of
+ * replaying its word-rise underneath the morph. Module-scoped because the action
+ * has no other channel to the navigation lifecycle.
+ */
+let viewTransitionUpdating = false;
+
+export function setViewTransitionUpdating(active: boolean): void {
+	viewTransitionUpdating = active;
+}
 
 export async function startLenis(): Promise<void> {
 	if (typeof window === 'undefined') return;
-	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	if (prefersReducedMotion()) return;
 	if (lenisInstance) return;
 
 	const { default: Lenis } = await import('lenis');
+
+	// The dynamic import is async: the user may have toggled reduced motion (or a
+	// concurrent caller may have won the race) while it loaded. Re-check before
+	// instantiating so a mid-import reduce cannot leave smooth scroll running.
+	if (prefersReducedMotion() || lenisInstance) return;
 
 	const lenis = new Lenis({
 		duration: 1.05,
@@ -27,7 +63,11 @@ export async function startLenis(): Promise<void> {
 	}
 	requestAnimationFrame(raf);
 
-	lenisInstance = { destroy: () => lenis.destroy(), raf: (t) => lenis.raf(t) };
+	lenisInstance = {
+		destroy: () => lenis.destroy(),
+		stop: () => lenis.stop(),
+		start: () => lenis.start()
+	};
 }
 
 export function stopLenis(): void {
@@ -35,10 +75,30 @@ export function stopLenis(): void {
 	lenisInstance = null;
 }
 
+/**
+ * Pause / resume Lenis without tearing it down. A cross-page View Transition
+ * captures before/after snapshots of the viewport; Lenis runs on native scroll
+ * via a rAF loop, so letting it keep writing scroll across the snapshot frames
+ * shifts the old vs new capture and causes a jump. The layout pauses Lenis
+ * before startViewTransition and resumes it when the transition finishes. Both
+ * no-op when Lenis never started (reduced motion / SSR).
+ */
+export function pauseLenis(): void {
+	lenisInstance?.stop();
+}
+
+export function resumeLenis(): void {
+	lenisInstance?.start();
+}
+
 export type RevealOptions = {
 	threshold?: number;
 	rootMargin?: string;
 	splitWords?: boolean;
+	/** Present at rest (skip the entrance) while a cross-page View Transition is
+	 *  swapping the DOM, so a `view-transition-name` morph target captures real
+	 *  content instead of the pre-reveal clipped state. */
+	restDuringViewTransition?: boolean;
 };
 
 /**
@@ -50,12 +110,18 @@ export type RevealOptions = {
  * stagger via the `--i` custom property.
  */
 export function reveal(node: HTMLElement, options: RevealOptions = {}) {
-	const { threshold = 0.18, rootMargin = '0px 0px -10% 0px', splitWords = false } = options;
+	const {
+		threshold = 0.18,
+		rootMargin = '0px 0px -10% 0px',
+		splitWords = false,
+		restDuringViewTransition = false
+	} = options;
 
-	const reduced =
-		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-	if (reduced) {
+	// Present at rest — skipping the entrance — when motion is reduced, or when
+	// this element is the morph target of an in-flight cross-page View Transition.
+	// The transition itself supplies the motion; capturing the pre-reveal clipped
+	// state would otherwise morph the title toward an empty box.
+	if (prefersReducedMotion() || (restDuringViewTransition && viewTransitionUpdating)) {
 		node.dataset.revealed = 'true';
 		return { destroy() {} };
 	}
@@ -105,13 +171,13 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
  * Svelte action that gives an element a magnetic hover — translate it toward
  * the cursor by a small fraction of the offset, with smooth release.
  *
- * `strength === 0` (or reduced motion) makes the action a no-op so callers can
- * pass the strength conditionally without branching the template.
+ * `strength === 0` makes the action a no-op so callers can pass the strength
+ * conditionally without branching the template. Reduced motion is honored live
+ * in the pointer handler (not snapshotted at mount), so the in-page toggle can
+ * disable — or re-enable — the effect at runtime without remounting the element.
  */
 export function magnetic(node: HTMLElement, strength = 0.22) {
-	const reduced =
-		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	if (reduced || strength === 0) return { destroy() {} };
+	if (strength === 0) return { destroy() {} };
 
 	let raf = 0;
 	let tx = 0;
@@ -131,6 +197,18 @@ export function magnetic(node: HTMLElement, strength = 0.22) {
 	}
 
 	function onMove(e: PointerEvent) {
+		// Honor a runtime switch to reduced motion: snap back to rest and stop
+		// applying transforms. CSS reduced-motion guards do not cover this inline
+		// transform, so the check must live here, read fresh on every move.
+		if (prefersReducedMotion()) {
+			targetX = targetY = tx = ty = 0;
+			if (raf) {
+				cancelAnimationFrame(raf);
+				raf = 0;
+			}
+			node.style.transform = '';
+			return;
+		}
 		const rect = node.getBoundingClientRect();
 		const cx = rect.left + rect.width / 2;
 		const cy = rect.top + rect.height / 2;

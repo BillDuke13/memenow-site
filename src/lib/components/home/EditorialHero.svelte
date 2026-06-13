@@ -49,7 +49,7 @@
 		<div class="c-editorial-hero__scrim" aria-hidden="true"></div>
 	{/if}
 
-	<div class="c-editorial-hero__top">
+	<div class="c-editorial-hero__top reveal-fade" use:reveal>
 		<span>{eyebrowLeft}</span>
 		<span>{eyebrowRight}</span>
 	</div>
@@ -58,7 +58,7 @@
 		<h1
 			id={titleId}
 			class="c-editorial-hero__title"
-			use:reveal={{ splitWords: true, threshold: 0 }}
+			use:reveal={{ splitWords: true, threshold: 0, restDuringViewTransition: true }}
 		>
 			{title}
 		</h1>

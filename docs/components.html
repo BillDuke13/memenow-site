@@ -213,6 +213,17 @@
 							(Safari private mode, quota exceeded). Browser tests cover every branch.
 						</td>
 					</tr>
+					<tr>
+						<td><code>MotionSwitch</code></td>
+						<td><code>lib/components/ui/MotionSwitch.svelte</code></td>
+						<td>
+							Waveform / dash icon button in the floating dock. Mirrors <code>data-motion</code> on
+							mount, toggles between <code>full</code> and <code>reduced</code> on click, persists
+							to <code>localStorage['memenow.motion']</code>, and starts or stops Lenis. Can both
+							honor and override the OS <code>prefers-reduced-motion</code> setting. Tolerant of
+							storage failures. Browser tests cover every branch.
+						</td>
+					</tr>
 				</tbody>
 			</table>
 

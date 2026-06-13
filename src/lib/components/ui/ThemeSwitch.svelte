@@ -26,7 +26,7 @@
 
 <button
 	type="button"
-	class="c-theme-switch"
+	class="c-icon-switch"
 	aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
 	onclick={toggle}
 >

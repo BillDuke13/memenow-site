@@ -29,6 +29,7 @@
 	number="01"
 	label="Yinyang Agent"
 	banner
+	align="left"
 	title="A Bazi reading you can return to."
 	image={{
 		avif: '/images/products-yinyang.avif',

@@ -1,13 +1,22 @@
 <script lang="ts">
-	import '@fontsource-variable/manrope/wght.css';
-	import '@fontsource/inter/400.css';
-	import '@fontsource/inter/500.css';
-	import '@fontsource/inter/600.css';
+	// Variable fonts carrying the optical-size (opsz) axis, activated by
+	// `font-optical-sizing: auto` in tokens.css. Newsreader is the display face,
+	// Inter the body face; one import per family covers the full weight range.
+	import '@fontsource-variable/newsreader/opsz.css';
+	import '@fontsource-variable/inter/opsz.css';
 	import { onMount } from 'svelte';
+	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import './layout.css';
 	import AppShell from '$lib/components/layout/AppShell.svelte';
-	import { startLenis, stopLenis } from '$lib/utils/motion';
+	import {
+		startLenis,
+		stopLenis,
+		pauseLenis,
+		resumeLenis,
+		prefersReducedMotion,
+		setViewTransitionUpdating
+	} from '$lib/utils/motion';
 	import { resolveRouteFamily } from '$lib/utils/route-family';
 
 	const SITE_ORIGIN = 'https://memenow.xyz';
@@ -50,6 +59,40 @@
 			window.removeEventListener('resize', onScroll);
 			if (raf) cancelAnimationFrame(raf);
 		};
+	});
+
+	// Cross-page View Transitions. Same-document (SPA) navigations crossfade via
+	// the View Transitions API; unsupported browsers fall through to an instant
+	// swap. Lenis is paused around the transition so its native-scroll rAF can't
+	// shift the before/after snapshots, then resumed once the transition settles.
+	// Reduced motion (the OS setting or the in-page toggle) short-circuits to an
+	// instant swap below, so no transition is started in the first place.
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+		// Honor reduced motion: skip the transition entirely (instant DOM swap),
+		// which also means no ::view-transition snapshot or animation to undo.
+		if (prefersReducedMotion()) return;
+		// Same-path / hash-only navigation changes nothing visible — skip it.
+		if (navigation.to?.url.pathname === navigation.from?.url.pathname) return;
+
+		pauseLenis();
+		// Flag the in-flight transition so the hero title presents at rest (its
+		// entrance is suppressed) and the shared-element morph captures real text.
+		setViewTransitionUpdating(true);
+		return new Promise<void>((resolve) => {
+			const transition = document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+			// Resume Lenis and clear the nav flag on success OR an aborted
+			// transition (rapid re-navigation rejects .finished); one settle
+			// handler for both also avoids an unhandled rejection.
+			const settle = () => {
+				resumeLenis();
+				setViewTransitionUpdating(false);
+			};
+			transition.finished.then(settle, settle);
+		});
 	});
 
 	$effect(() => {

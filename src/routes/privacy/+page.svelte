@@ -30,8 +30,9 @@
 
 <Chapter id="data" number="02" label="Data" title="What we collect.">
 	<p class="c-chapter__lede">
-		No third-party analytics, no advertising. The site keeps a single browser-local key,
-		<code class="prose-code">memenow.theme</code>, for light or dark mode — never sent to us.
+		No third-party analytics, no advertising. The site keeps two browser-local keys —
+		<code class="prose-code">memenow.theme</code> for light or dark mode and
+		<code class="prose-code">memenow.motion</code> for your motion preference — never sent to us.
 	</p>
 	<p class="c-chapter__lede">
 		Cloudflare records standard request metadata (IP, user agent, timestamp, path) for operations

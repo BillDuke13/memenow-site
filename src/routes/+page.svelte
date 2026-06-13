@@ -86,6 +86,7 @@
 	number="03"
 	label="Quant Research"
 	banner
+	align="left"
 	title="Small models, repeatable edges."
 	image={{
 		avif: '/images/products-quant.avif',

@@ -68,15 +68,19 @@
 					<tr>
 						<td>Document shell</td>
 						<td>
-							Ships the inline theme boot script plus OG / Twitter / icon meta, the manifest link,
-							the route-family placeholder, and JSON-LD structured data (Organization + WebSite).
+							Ships the inline theme boot script, the inline motion-preference boot script (seeds
+							<code>data-motion</code> on <code>&lt;html&gt;</code> before first paint), OG /
+							Twitter / icon meta, the manifest link, the route-family placeholder, and JSON-LD
+							structured data (Organization + WebSite).
 						</td>
 						<td><code>src/app.html</code></td>
 					</tr>
 					<tr>
 						<td>Root layout</td>
 						<td>
-							Imports the Tailwind v4 entrypoint, boots Lenis on mount, mirrors the route family on
+							Imports the Tailwind v4 entrypoint and variable fonts; boots Lenis on mount; drives
+							the reading-progress hairline and <code>--world-scroll</code> parallax; registers
+							cross-page View Transitions via <code>onNavigate</code>; mirrors the route family on
 							SPA navigations.
 						</td>
 						<td><code>src/routes/+layout.svelte</code></td>
@@ -120,8 +124,10 @@
 					<tr>
 						<td>Utilities</td>
 						<td>
-							Class composition (<code>cn</code>), motion (<code>startLenis</code>,
-							<code>reveal</code>, <code>magnetic</code>), route classification.
+							Class composition (<code>cn</code>); motion (<code>startLenis</code>,
+							<code>stopLenis</code>, <code>pauseLenis</code>, <code>resumeLenis</code>,
+							<code>prefersReducedMotion</code>, <code>setViewTransitionUpdating</code>,
+							<code>reveal</code>, <code>magnetic</code>); route classification.
 						</td>
 						<td><code>src/lib/utils/</code></td>
 					</tr>
@@ -149,8 +155,9 @@
 				</li>
 				<li>
 					The browser receives HTML, runs the inline theme boot script in
-					<code>app.html</code> to apply the saved or system theme to <code>data-theme</code>, and
-					begins parsing.
+					<code>app.html</code> to apply the saved or system theme to <code>data-theme</code>, runs
+					the inline motion-preference boot script to write <code>data-motion</code>, and begins
+					parsing.
 				</li>
 				<li>
 					Hydration runs <code>+layout.svelte</code>, which boots Lenis (skipped under reduced

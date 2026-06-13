@@ -34,9 +34,9 @@
 				<div class="eyebrow">Engineering</div>
 				<h1>Motion &amp; reveal</h1>
 				<p class="lede">
-					Smooth scroll, scroll-triggered reveals, and a magnetic hover. Three primitives, three
-					tests, and a single non-negotiable rule:
-					<code>prefers-reduced-motion: reduce</code> turns every one of them off.
+					Smooth scroll, scroll-triggered reveals, a magnetic hover, and cross-page View
+					Transitions. A single non-negotiable rule runs through all of them: reduced motion — from
+					the OS setting <em>or</em> the in-page toggle — turns every one of them off.
 				</p>
 			</header>
 
@@ -58,6 +58,14 @@ onMount(() =&gt; {
 				The lifecycle is server-safe: <code>startLenis</code> early-returns when
 				<code>window</code> is undefined, when reduced motion is requested, or when an instance is
 				already running. The dynamic import keeps Lenis off the SSR critical path.
+			</p>
+			<p>
+				Two lighter-weight exports — <code>pauseLenis()</code> and <code>resumeLenis()</code> — stop
+				and restart the existing instance without tearing it down. The root layout uses them to
+				bracket cross-page View Transitions: Lenis is paused before
+				<code>document.startViewTransition</code> so its rAF loop can't shift the old/new viewport
+				snapshots, then resumed when the transition finishes. Both are no-ops when Lenis never
+				started (reduced motion or SSR).
 			</p>
 
 			<h2>Scroll-triggered reveals — <code>reveal</code> action</h2>
@@ -115,6 +123,19 @@ onMount(() =&gt; {
 				<em>strong</em>, etc.).
 			</p>
 
+			<h3><code>restDuringViewTransition</code></h3>
+			<p>
+				Pass <code>restDuringViewTransition: true</code> on any element that is a View Transition
+				morph target. During a cross-page transition, <code>document.startViewTransition</code>
+				captures a before/after snapshot of the element's rendered state. If that element is still
+				in its pre-reveal clipped state, the morph animates toward an empty box rather than real
+				content. With the flag set, the action reads the module-scoped
+				<code>viewTransitionUpdating</code> boolean (written by
+				<code>setViewTransitionUpdating</code> in <code>motion.ts</code>) and, if a transition is in
+				flight, presents the element at rest immediately instead of starting an entrance animation.
+				<code>EditorialHero</code> passes this flag on its title.
+			</p>
+
 			<h2>Magnetic hover — <code>magnetic</code> action</h2>
 			<p>
 				<code>use:magnetic={strength}</code> nudges an element toward the cursor by a fraction of
@@ -147,12 +168,34 @@ onMount(() =&gt; {
 
 			<h2>Reduced motion</h2>
 			<p>
-				Every motion primitive checks <code>prefers-reduced-motion: reduce</code> and degrades
-				gracefully:
+				Reduced motion is governed by two parallel triggers, both of which collapse all motion
+				primitives to no-ops. The single JS gate is <code>prefersReducedMotion()</code> in
+				<code>motion.ts</code>:
 			</p>
+			<ol>
+				<li>
+					<strong>OS query</strong> — <code>prefers-reduced-motion: reduce</code>. In CSS this is
+					guarded by <code>:root:not([data-motion])</code> so it only applies before the boot script
+					runs or when scripting is off. In JS, <code>prefersReducedMotion()</code> falls back to
+					<code>window.matchMedia</code> when <code>data-motion</code> is absent.
+				</li>
+				<li>
+					<strong>In-page toggle</strong> — <code>MotionSwitch.svelte</code> in the floating dock
+					writes <code>data-motion="full"</code> or <code>data-motion="reduced"</code> on
+					<code>&lt;html&gt;</code> and persists the choice to
+					<code>localStorage['memenow.motion']</code>. The <code>app.html</code> boot script reads
+					that key and writes the attribute before first paint so the preference applies
+					immediately. When the attribute is present it is the single source of truth in both CSS
+					(<code>:root[data-motion='reduced']</code>) and JS — it can both honor <em>and</em>
+					override the OS setting.
+				</li>
+			</ol>
+			<p>When motion is reduced, every primitive degrades gracefully:</p>
 			<ul>
 				<li>
 					<code>startLenis</code> never instantiates Lenis — native browser scroll stays in effect.
+					<code>MotionSwitch</code> calls <code>stopLenis()</code> / <code>startLenis()</code>
+					directly when the preference changes after hydration.
 				</li>
 				<li>
 					<code>reveal</code> sets <code>data-revealed="true"</code> immediately and skips the
@@ -168,12 +211,18 @@ onMount(() =&gt; {
 					near-zero.
 				</li>
 				<li>
-					<code>components.css</code> nukes the reveal transforms and clip paths under the same
-					media query so anything we missed still ends up visible.
+					<code>components.css</code> removes the reveal transforms and clip paths under both
+					triggers so anything not caught by the JS gate still ends up visible.
 				</li>
 				<li>
 					<code>world-layer.css</code> zeroes the <code>--world-scroll</code> parallax transform, so
 					the Tai Chi underlay holds still.
+				</li>
+				<li>
+					Cross-page View Transitions are skipped entirely — <code>onNavigate</code> in
+					<code>+layout.svelte</code> returns early instead of calling
+					<code>document.startViewTransition</code>, producing an instant DOM swap with no
+					animation.
 				</li>
 			</ul>
 
@@ -183,12 +232,37 @@ onMount(() =&gt; {
 				reviewer-blocking; the existing tests demonstrate the pattern.
 			</div>
 
-			<h2>Page-level transitions</h2>
+			<h2>Cross-page View Transitions</h2>
 			<p>
-				The site does not use a route transition library. The continuous scene is created by the
-				world-layer overlay (<code>world-layer.css</code>), the per-route fog
-				(<code>scene.css</code>), and the route-family attribute swap on
-				<code>&lt;html&gt;</code> — none of which require remounting content.
+				Same-document (SPA) navigations crossfade via the View Transitions API. The
+				<code>onNavigate</code> hook in <code>src/routes/+layout.svelte</code> calls
+				<code>document.startViewTransition</code>; browsers that do not support the API receive an
+				instant DOM swap instead. The transition is skipped entirely under reduced motion (OS query
+				or the in-page toggle) so no snapshot or animation is started.
+			</p>
+			<p>
+				Lenis is paused before the transition and resumed when it finishes (via
+				<code>transition.finished</code>). Without the pause, Lenis's native-scroll rAF loop can
+				shift the old and new viewport snapshots and cause a visible jump.
+			</p>
+			<p>
+				The hero title (<code>.c-editorial-hero__title</code>) carries
+				<code>view-transition-name: hero-title</code> in <code>components.css</code>, giving it a
+				shared-element morph between routes instead of dissolving with the page body. Because the
+				morph must capture real text — not the pre-reveal clipped state — the <code>reveal</code>
+				action skips its word-rise entrance on elements that pass
+				<code>restDuringViewTransition: true</code>. The flag is read from the module-scoped
+				<code>viewTransitionUpdating</code> boolean, set via
+				<code>setViewTransitionUpdating(true)</code> before the transition and cleared when it
+				finishes.
+			</p>
+
+			<h2>Page-level continuity</h2>
+			<p>
+				Beyond the View Transition crossfade, the site's continuous scene comes from the world-layer
+				overlay (<code>world-layer.css</code>), the per-route fog (<code>scene.css</code>), and the
+				route-family attribute swap on <code>&lt;html&gt;</code> — none of which require remounting
+				content.
 			</p>
 
 			<h2>Test coverage</h2>
@@ -223,6 +297,14 @@ onMount(() =&gt; {
 						<td><code>ThemeSwitch.svelte.test.ts</code></td>
 						<td>client</td>
 						<td>Mount sync, toggle persistence, storage-failure tolerance.</td>
+					</tr>
+					<tr>
+						<td><code>MotionSwitch.svelte.test.ts</code></td>
+						<td>client</td>
+						<td>
+							Mount sync from <code>data-motion</code>, reduce/allow toggle, Lenis stop/start on
+							toggle, storage persistence, storage-failure tolerance.
+						</td>
 					</tr>
 					<tr>
 						<td><code>sitemap.xml/server.test.ts</code></td>

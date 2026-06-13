@@ -40,6 +40,28 @@
 				}
 			})();
 		</script>
+		<!-- Motion-preference boot. Unlike data-theme, <html> ships NO static
+		     data-motion: its absence is exactly what lets the CSS
+		     `:root:not([data-motion])` fallback honor the OS prefers-reduced-motion
+		     query when scripting is off. With scripting on, this writes the attribute
+		     (stored choice, else the OS setting) before first paint, and from then on
+		     the attribute is the single source of truth (see tokens.css + motion.ts). -->
+		<script>
+			(function () {
+				try {
+					var stored = localStorage.getItem('memenow.motion');
+					var motion =
+						stored === 'full' || stored === 'reduced'
+							? stored
+							: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+								? 'reduced'
+								: 'full';
+					document.documentElement.setAttribute('data-motion', motion);
+				} catch (_e) {
+					// Ignore storage failures (private mode, etc).
+				}
+			})();
+		</script>
 		<script type="application/ld+json">
 			{
 				"@context": "https://schema.org",
