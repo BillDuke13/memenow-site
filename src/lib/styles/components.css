@@ -17,8 +17,9 @@
 	display: inline-block;
 	transform: translateY(110%);
 	transition: transform var(--motion-duration-reveal) var(--motion-ease-reveal);
-	transition-delay: calc(var(--i, 0) * var(--motion-stagger));
-	will-change: transform;
+	/* Cap the per-word stagger so a long heading still resolves promptly; words
+	   past the cap share the final delay instead of tailing off past ~1s. */
+	transition-delay: min(var(--i, 0) * var(--motion-stagger), 500ms);
 }
 
 [data-revealed='true'] .reveal-word-inner {
@@ -32,7 +33,6 @@
 		opacity var(--motion-duration-reveal) var(--motion-ease-reveal) var(--motion-delay-reveal-fade),
 		transform var(--motion-duration-reveal) var(--motion-ease-reveal)
 			var(--motion-delay-reveal-fade);
-	will-change: opacity, transform;
 }
 
 .reveal-fade[data-revealed='true'] {
@@ -43,22 +43,34 @@
 .reveal-clip {
 	clip-path: inset(0 0 100% 0);
 	transition: clip-path var(--motion-duration-reveal-clip) var(--motion-ease-reveal-clip);
-	will-change: clip-path;
 }
 
 .reveal-clip[data-revealed='true'] {
 	clip-path: inset(0);
 }
 
+/* Reduced motion: settle reveals/clips/image-zoom to their resting state.
+   Mirrors the OS query and the in-page toggle attribute (see tokens.css). */
 @media (prefers-reduced-motion: reduce) {
-	[data-revealed] .reveal-word-inner,
-	.reveal-fade,
-	.reveal-clip {
+	:root:not([data-motion]) [data-revealed] .reveal-word-inner,
+	:root:not([data-motion]) .reveal-fade,
+	:root:not([data-motion]) .reveal-clip,
+	:root:not([data-motion]) .c-chapter__media img {
 		transition: none !important;
 		transform: none !important;
 		clip-path: none !important;
 		opacity: 1 !important;
 	}
+}
+
+:root[data-motion='reduced'] [data-revealed] .reveal-word-inner,
+:root[data-motion='reduced'] .reveal-fade,
+:root[data-motion='reduced'] .reveal-clip,
+:root[data-motion='reduced'] .c-chapter__media img {
+	transition: none !important;
+	transform: none !important;
+	clip-path: none !important;
+	opacity: 1 !important;
 }
 
 /* ── Editorial hero ─────────────────────────────────── */
@@ -127,6 +139,7 @@
 	font-size: var(--type-overline);
 	letter-spacing: var(--ls-overline);
 	text-transform: uppercase;
+	font-variant-numeric: tabular-nums;
 	color: var(--text-muted);
 }
 
@@ -142,7 +155,17 @@
 	letter-spacing: -0.045em;
 	margin: 0 0 clamp(1.5rem, 3vh, 2rem);
 	max-width: 16ch;
+	text-wrap: balance;
 	color: var(--text-primary);
+	/* Shared-element morph across SPA navigations. Every route renders exactly
+	   one EditorialHero, so this name is unique in any single snapshot and the
+	   title hands off — crossfade plus a slight box morph — between pages instead
+	   of dissolving with the page body in the root crossfade. The entrance
+	   word-rise is suppressed during the transition (reveal's
+	   restDuringViewTransition) so the morph target shows real text, not the
+	   pre-reveal clipped state. Reduced motion never reaches here: onNavigate
+	   skips the whole transition. */
+	view-transition-name: hero-title;
 }
 
 .c-editorial-hero__lede {
@@ -151,7 +174,10 @@
 	line-height: var(--leading-relaxed);
 	color: var(--text-secondary);
 	max-width: 56ch;
+	text-wrap: balance;
 	margin: 0 0 clamp(1.5rem, 3vh, 2rem);
+	/* Trail the title so the hero assembles top-down rather than all at once. */
+	transition-delay: calc(var(--motion-stagger) * 4);
 }
 
 .c-editorial-hero__cue {
@@ -163,6 +189,7 @@
 	text-transform: uppercase;
 	color: var(--text-secondary);
 	margin-top: clamp(2rem, 6vh, 4rem);
+	transition-delay: calc(var(--motion-stagger) * 6);
 }
 
 .c-editorial-hero__cue::before {
@@ -175,15 +202,47 @@
 /* ── Chapter ────────────────────────────────────────── */
 
 .c-chapter {
+	position: relative;
 	padding-block: clamp(7rem, 16vh, 12rem);
-	border-top: 1px solid var(--border-default);
 	/* Prevent banner-mode media (negative inline margin) and any decorative
 	   overflow from leaking onto <main>'s horizontal scrollbar. */
 	overflow-x: clip;
 }
 
-.c-chapter:first-of-type {
-	border-top: none;
+/* Fog seam — the divider between chapters dissolves toward both ends instead
+   of ruling a hard hairline edge to edge, echoing the world-layer fog so the
+   site reads as one continuous scene that fades between movements rather than
+   stacking boxed sections. Decorative; never interactive. */
+.c-chapter::before {
+	content: '';
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline: 0;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		var(--border-default) 16%,
+		var(--border-default) 84%,
+		transparent
+	);
+	pointer-events: none;
+}
+
+.c-chapter:first-of-type::before {
+	display: none;
+}
+
+/* Skip layout/paint for off-screen chapters so the first paint only renders
+   what is near the viewport. The first chapter is above the fold and excluded.
+   `contain-intrinsic-size: auto …` makes the browser remember each chapter's
+   real height after it has rendered once, so the scrollbar stays stable and
+   in-page anchor jumps land correctly; the px value is only the pre-render
+   estimate. Engines without content-visibility (older Firefox) simply render
+   everything — progressive enhancement, no behavioral change. */
+.c-chapter:not(:first-of-type) {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 800px;
 }
 
 .c-chapter__inner {
@@ -245,6 +304,7 @@
 	margin: 0;
 	color: var(--text-primary);
 	max-width: 18ch;
+	text-wrap: balance;
 }
 
 .c-chapter__lede {
@@ -254,6 +314,7 @@
 	color: var(--text-secondary);
 	margin: 0 auto;
 	max-width: 60ch;
+	text-wrap: pretty;
 	text-align: center;
 }
 
@@ -281,6 +342,14 @@
 	height: 100%;
 	object-fit: cover;
 	display: block;
+	/* Settle out of a faint zoom as the clip reveals so the image arrives rather
+	   than snapping flat. One-shot on reveal — not scroll-linked. */
+	transform: scale(1.04);
+	transition: transform var(--motion-duration-reveal-clip) var(--motion-ease-reveal-clip);
+}
+
+.c-chapter__media[data-revealed='true'] img {
+	transform: scale(1);
 }
 
 .c-chapter__cta {
@@ -605,6 +674,35 @@
 	}
 }
 
+/* Honor user-preference media queries on the glassmorphic dock: drop the
+   translucency/blur when transparency is reduced, solidify the hairlines under
+   increased contrast, and map to system colors under forced-colors (which
+   strips box-shadow, so the border must carry the dock's definition). */
+@media (prefers-reduced-transparency: reduce) {
+	.c-dock {
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		background: var(--surface-ink);
+	}
+}
+
+@media (prefers-contrast: more) {
+	.c-dock {
+		border-color: var(--text-dock);
+	}
+
+	.c-dock__divider {
+		background: var(--text-dock-muted);
+	}
+}
+
+@media (forced-colors: active) {
+	.c-dock {
+		background: Canvas;
+		border: 1px solid CanvasText;
+	}
+}
+
 /* ── ArtifactCta — narrative pivot ───────────────────── */
 
 .c-artifact-cta {
@@ -705,6 +803,7 @@
 	font-size: var(--type-small);
 	line-height: var(--leading-relaxed);
 	max-width: 76ch;
+	text-wrap: pretty;
 	margin: 0;
 }
 
@@ -736,9 +835,9 @@
 	height: 5px;
 }
 
-/* ── Theme switch (icon button) ──────────────────────── */
+/* ── Icon switch (shared dock toggle: theme + motion) ── */
 
-.c-theme-switch {
+.c-icon-switch {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
@@ -756,18 +855,18 @@
 		border-color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
-.c-theme-switch::before {
+.c-icon-switch::before {
 	content: '';
 	position: absolute;
 	inset: calc(-1 * var(--spacing-2));
 }
 
-.c-theme-switch:hover {
+.c-icon-switch:hover {
 	background: var(--surface-sunken);
 	border-color: var(--accent-green);
 }
 
-.c-theme-switch:focus-visible {
+.c-icon-switch:focus-visible {
 	outline: 2px solid var(--border-focus);
 	outline-offset: 2px;
 }
@@ -821,6 +920,7 @@
 	justify-content: space-between;
 	gap: var(--spacing-4);
 	font-size: var(--type-caption);
+	font-variant-numeric: tabular-nums;
 	color: var(--text-muted);
 }
 

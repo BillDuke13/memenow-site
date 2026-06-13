@@ -3,38 +3,44 @@
  *
  * Two-tone palette: sage green (primary) + coral pink (highlight, identical
  * to the logo) + warm white. Components must consume tokens, never literals.
+ *
+ * Palette colors are authored in OKLCH (perceptually uniform — even lightness
+ * steps and predictable color-mix); decorative shadows and the dock's
+ * achromatic white/black films stay rgba(), where OKLCH adds no benefit. Every
+ * OKLCH value round-trips to the original sRGB byte, so contrast is unchanged.
  */
 
 :root {
 	/* Surface — warm white */
-	--surface-base: #faf9f6;
-	--surface-raised: #ffffff;
-	--surface-sunken: #f0f2ee;
-	--surface-ink: #2c3a30;
-	--surface-overlay: rgba(44, 58, 48, 0.55);
+	--surface-base: oklch(98.2% 0.0041 91.45);
+	--surface-raised: oklch(100% 0 0);
+	--surface-sunken: oklch(95.85% 0.0057 128.53);
+	--surface-ink: oklch(33.25% 0.0255 153.78);
+	--surface-overlay: oklch(33.25% 0.0255 153.78 / 0.55);
 
 	/* Text — deep green ink */
-	--text-primary: #2c3a30;
-	--text-secondary: #4f6253;
-	/* Darkened from #8a9690 to clear WCAG AA (>=4.5:1) for small label text on
-	   light surfaces; the dark theme keeps the lighter grey, which already passes. */
-	--text-muted: #62716a;
-	--text-inverse: #ffffff;
+	--text-primary: oklch(33.25% 0.0255 153.78);
+	--text-secondary: oklch(47.56% 0.0333 151.26);
+	/* Muted grey is darkened relative to the dark theme's so small label text
+	   clears WCAG AA on light surfaces (measured 4.88:1 on --surface-base); the
+	   dark theme keeps its lighter grey, which already passes (5.40:1). */
+	--text-muted: oklch(53.39% 0.021 165.79);
+	--text-inverse: oklch(100% 0 0);
 
 	/* Border — warm hairlines */
-	--border-default: #e2dfd8;
-	--border-strong: #c7cdc4;
-	--border-focus: #4a7c59;
+	--border-default: oklch(90.4% 0.01 87.48);
+	--border-strong: oklch(84.11% 0.0139 134.91);
+	--border-focus: oklch(54.06% 0.0773 152.71);
 
 	/* Brand — sage green (primary) */
-	--accent-green: #4a7c59;
-	--accent-green-light: #6e9c7a;
-	--accent-green-soft: rgba(74, 124, 89, 0.12);
+	--accent-green: oklch(54.06% 0.0773 152.71);
+	--accent-green-light: oklch(64.99% 0.071 152.2);
+	--accent-green-soft: oklch(54.06% 0.0773 152.71 / 0.12);
 
 	/* Brand — coral pink (highlight, replaces vermilion seal) */
-	--accent-pink: #da8579;
-	--accent-pink-light: #e89a8e;
-	--accent-pink-soft: rgba(218, 133, 121, 0.14);
+	--accent-pink: oklch(70.34% 0.107 28.69);
+	--accent-pink-light: oklch(76.07% 0.096 29.09);
+	--accent-pink-soft: oklch(70.34% 0.107 28.69 / 0.14);
 
 	/* Brand coral alias — same value as accent-pink, used by logo and
 	   adjacent signature elements only. */
@@ -47,11 +53,11 @@
 	--status-warning: var(--accent-pink);
 	--status-info: var(--accent-green);
 
-	/* Type — Manrope (variable) for display, Inter for body; system sans fallbacks. */
-	--font-display:
-		'Manrope Variable', 'Manrope', 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
-	--font-body:
-		'Inter', 'Manrope Variable', -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+	/* Type — Newsreader (variable, opsz) for display, Inter (variable, opsz) for
+	   body. A serif display face over a sans body gives a clear editorial
+	   hierarchy; both carry an optical-size axis (see font-optical-sizing below). */
+	--font-display: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
+	--font-body: 'Inter Variable', 'Inter', -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
 
 	--type-display-xl: clamp(3.75rem, 13vw, 10rem);
@@ -114,8 +120,8 @@
 	/* Reveal — scroll-triggered word / fade / clip animations share one
 	   exit-cubic; the clip variant used for image masks runs a touch slower
 	   with a softer in-out curve. */
-	--motion-duration-reveal: 0.95s;
-	--motion-duration-reveal-clip: 1.25s;
+	--motion-duration-reveal: 0.55s;
+	--motion-duration-reveal-clip: 0.75s;
 	--motion-delay-reveal-fade: 0.05s;
 	--motion-stagger: 55ms;
 	--motion-ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
@@ -137,7 +143,7 @@
 
 	/* Floating dock — glassmorphic dark pill, kept stable across light/dark
 	   themes (the dock is intentionally one finish). */
-	--surface-dock: color-mix(in srgb, var(--surface-ink) 92%, transparent);
+	--surface-dock: color-mix(in oklch, var(--surface-ink) 92%, transparent);
 	--surface-dock-hover: rgba(255, 255, 255, 0.08);
 	--surface-dock-active: rgba(255, 255, 255, 0.1);
 	--surface-dock-item-hover: rgba(255, 255, 255, 0.06);
@@ -154,33 +160,54 @@
 
 /* Dark theme */
 [data-theme='dark'] {
-	--surface-base: #1a201c;
-	--surface-raised: #232a26;
-	--surface-sunken: #141815;
-	--surface-ink: #0d100e;
-	--surface-overlay: rgba(0, 0, 0, 0.65);
+	--surface-base: oklch(23.59% 0.0116 156.22);
+	--surface-raised: oklch(27.67% 0.0123 160.47);
+	--surface-sunken: oklch(20.36% 0.0085 153.15);
+	--surface-ink: oklch(16.88% 0.0063 156.48);
+	--surface-overlay: oklch(0% 0 0 / 0.65);
 
-	--text-primary: #e8ebe6;
-	--text-secondary: #c2c8c1;
-	--text-muted: #8a9690;
-	--text-inverse: #faf9f6;
+	--text-primary: oklch(93.64% 0.0074 132.42);
+	--text-secondary: oklch(82.61% 0.0117 141.26);
+	--text-muted: oklch(66.16% 0.0163 164.48);
+	--text-inverse: oklch(98.2% 0.0041 91.45);
 
-	--border-default: #38423b;
-	--border-strong: #54605a;
-	--border-focus: #88b895;
+	--border-default: oklch(36.76% 0.0177 154.92);
+	--border-strong: oklch(47.68% 0.0177 164.13);
+	--border-focus: oklch(73.87% 0.0717 152.81);
 
-	--accent-green: #88b895;
-	--accent-green-light: #a0c8a9;
-	--accent-green-soft: rgba(136, 184, 149, 0.18);
+	--accent-green: oklch(73.87% 0.0717 152.81);
+	--accent-green-light: oklch(79.53% 0.0609 151.63);
+	--accent-green-soft: oklch(73.87% 0.0717 152.81 / 0.18);
 
-	--accent-pink: #f0a99e;
-	--accent-pink-light: #f5bfb5;
-	--accent-pink-soft: rgba(240, 169, 158, 0.18);
+	--accent-pink: oklch(79.97% 0.0859 28.92);
+	--accent-pink-light: oklch(85.03% 0.0641 30.47);
+	--accent-pink-soft: oklch(79.97% 0.0859 28.92 / 0.18);
 
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
 	--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
 	--shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
 	--shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.65);
+}
+
+/* Wide-gamut brand accents. On Display-P3 screens the sage and coral push past
+   the sRGB chroma ceiling for a richer brand presence. Each value keeps the
+   exact lightness and hue of its sRGB fallback above, so every contrast ratio
+   is preserved — only chroma grows where the display can render it. The sRGB
+   oklch() declarations above remain the universal fallback for non-P3 engines. */
+@media (color-gamut: p3) {
+	:root {
+		--accent-green: oklch(54.1% 0.0912 152.7);
+		--accent-green-light: oklch(65% 0.0838 152.2);
+		--accent-pink: oklch(70.3% 0.1262 28.7);
+		--accent-pink-light: oklch(76.1% 0.1133 29.1);
+	}
+
+	[data-theme='dark'] {
+		--accent-green: oklch(73.9% 0.0846 152.8);
+		--accent-green-light: oklch(79.5% 0.0718 151.6);
+		--accent-pink: oklch(80% 0.1014 28.9);
+		--accent-pink-light: oklch(85% 0.0756 30.5);
+	}
 }
 
 /* Base typographic baseline */
@@ -191,8 +218,15 @@ html {
 	font-family: var(--font-body);
 	font-size: 16px;
 	line-height: var(--leading-normal);
+	/* Let Newsreader and Inter pick their optical-size cut by font-size: finer,
+	   higher-contrast forms at display sizes, sturdier ones at text sizes. */
+	font-optical-sizing: auto;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	/* Keep keyboard focus clear of the fixed bottom dock and any sticky chapter
+	   head (WCAG 2.2 SC 2.4.11 Focus Not Obscured). */
+	scroll-padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+	scroll-padding-top: 2rem;
 	transition: background var(--motion-duration-slow) var(--motion-ease-standard);
 }
 
@@ -231,13 +265,37 @@ a:hover {
 	outline-offset: 3px;
 }
 
+/* Reduced-motion baseline, driven by two parallel triggers:
+   1. The OS `prefers-reduced-motion: reduce` query — the no-JS fallback. It is
+      guarded by `:root:not([data-motion])` so it only governs before the boot
+      script runs or when scripting is off; once app.html's boot script writes
+      `data-motion` on <html>, the attribute below becomes the single source of
+      truth (which is why <html> ships no static data-motion).
+   2. `:root[data-motion='reduced']` — the in-page motion toggle (MotionSwitch).
+      The toggle both honors and can override the OS setting, so it must drive
+      the same reset the media query does. The JS gate in motion.ts mirrors this
+      precedence exactly: the attribute wins whenever it is present.
+   The `:root` self-selector is kept alongside the descendant `*` so <html>'s own
+   transitions (e.g. theme-change background) collapse too, matching the prior
+   bare-`*` behavior. */
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
+	:root:not([data-motion]),
+	:root:not([data-motion]) *,
+	:root:not([data-motion]) *::before,
+	:root:not([data-motion]) *::after {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+}
+
+:root[data-motion='reduced'],
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+	animation-duration: 0.01ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.01ms !important;
+	scroll-behavior: auto !important;
 }

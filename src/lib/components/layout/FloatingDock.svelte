@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { homeLink, primaryNav, type NavLink } from '$lib/data/navigation';
 	import ThemeSwitch from '$lib/components/ui/ThemeSwitch.svelte';
+	import MotionSwitch from '$lib/components/ui/MotionSwitch.svelte';
 
 	function matches(path: string, pathname: string): boolean {
 		if (path === '/') return pathname === '/';
@@ -49,4 +50,5 @@
 	<span class="c-dock__divider" aria-hidden="true"></span>
 
 	<ThemeSwitch />
+	<MotionSwitch />
 </nav>

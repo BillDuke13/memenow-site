@@ -1,9 +1,11 @@
 <!--
 	Persistent atmosphere behind every route: the per-route fog (scene.css, via
-	--scene-fog-active) plus a faint Tai Chi geometry watermark. Decorative and
+	--scene-fog-active), a faint Tai Chi geometry watermark, and a static film
+	grain that gives flat surfaces a printed tooth. Decorative and
 	non-interactive — hidden from assistive tech. Mounted once in AppShell so the
-	whole site reads as one continuous world; the root layout drives its parallax
-	drift through the --world-scroll custom property (reduced motion zeroes it).
+	whole site reads as one continuous world; the root layout drives the Tai
+	Chi's parallax drift through the --world-scroll custom property (reduced
+	motion zeroes it). The grain is static and sits below all text.
 -->
 <div class="world-layer" aria-hidden="true">
 	<div class="world-layer__taichi">
@@ -20,4 +22,5 @@
 			<circle cx="50" cy="74" r="4.5" />
 		</svg>
 	</div>
+	<div class="world-layer__grain"></div>
 </div>

@@ -7,6 +7,15 @@
  * independent pages.
  */
 
+/* Register --world-scroll as a typed custom property so the parallax transform
+   interpolates smoothly instead of snapping per scroll tick. The root layout
+   writes it on <html> (0–1); it inherits down to .world-layer__taichi. */
+@property --world-scroll {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 0;
+}
+
 .world-layer {
 	position: fixed;
 	inset: 0;
@@ -29,7 +38,6 @@
 	   Reduced motion zeroes the transform in the media query below. */
 	transform: translate3d(0, calc(var(--world-scroll, 0) * -4vh), 0)
 		scale(calc(1 + var(--world-scroll, 0) * 0.05));
-	will-change: transform;
 }
 
 .world-layer__taichi svg {
@@ -37,13 +45,64 @@
 	height: auto;
 }
 
+/* Reduced motion: zero the parallax drift. Mirrors the OS query and the in-page
+   toggle attribute (see tokens.css for the dual-trigger rationale). */
 @media (prefers-reduced-motion: reduce) {
-	.world-layer__taichi {
+	:root:not([data-motion]) .world-layer__taichi {
 		transform: none;
 	}
+}
+
+:root[data-motion='reduced'] .world-layer__taichi {
+	transform: none;
 }
 
 [data-theme='dark'] .world-layer__taichi {
 	opacity: 0.1;
 	mix-blend-mode: screen;
 }
+
+/* Film grain — a faint, static monochrome tooth tiled across the world layer
+   so large flat surfaces read as printed paper rather than flat pixels. It
+   lives inside the z-index:-1 underlay and never sits over foreground text, so
+   it cannot affect reading contrast. Hidden when the user reduces transparency
+   or under forced colors, where a clean surface matters more than texture. */
+.world-layer__grain {
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23g)'/></svg>");
+	background-size: 140px 140px;
+	opacity: 0.06;
+	mix-blend-mode: multiply;
+}
+
+[data-theme='dark'] .world-layer__grain {
+	opacity: 0.085;
+	mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+	.world-layer__grain {
+		display: none;
+	}
+}
+
+/* Cross-page View Transitions. Same-document (SPA) navigations crossfade through
+   the View Transitions API (registered in +layout.svelte); unsupported browsers
+   fall through to an instant swap. The fixed world layer rides along inside the
+   root crossfade so the continuous scene never hard-cuts between routes. Lenis
+   is paused around the transition (see motion.ts) so native-scroll frames can't
+   shift the snapshots. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: var(--motion-duration-slow);
+	animation-timing-function: var(--motion-ease-standard);
+}
+
+/* Reduced motion is gated in JS, not here: +layout.svelte's onNavigate skips
+   startViewTransition entirely (an instant swap) when motion is reduced — via
+   the OS query or the in-page toggle (prefersReducedMotion in motion.ts) — so
+   there is no transition left to neutralize. A bare
+   `@media (prefers-reduced-motion: reduce)` rule would instead wrongly kill the
+   crossfade for someone who has explicitly re-enabled motion against an OS
+   reduce setting, a choice the JS gate honors. */
