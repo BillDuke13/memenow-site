@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { reveal } from './motion';
+import { magnetic, reveal } from './motion';
 
 describe('reveal action — splitWords', () => {
 	let host: HTMLElement | null = null;
@@ -136,5 +136,79 @@ describe('reveal action — prefers-reduced-motion', () => {
 		expect(node.dataset.revealed).toBe('true');
 		expect(node.querySelectorAll('.reveal-word').length).toBe(0);
 		expect(node.textContent).toBe('Hello world');
+	});
+});
+
+describe('magnetic action — runtime reduced motion', () => {
+	afterEach(() => {
+		document.documentElement.removeAttribute('data-motion');
+	});
+
+	function makeNode(): HTMLElement {
+		const node = document.createElement('a');
+		Object.assign(node.style, {
+			position: 'fixed',
+			left: '0',
+			top: '0',
+			width: '100px',
+			height: '100px'
+		});
+		document.body.appendChild(node);
+		return node;
+	}
+
+	const move = (node: HTMLElement, clientX: number, clientY: number) =>
+		node.dispatchEvent(new PointerEvent('pointermove', { clientX, clientY, bubbles: true }));
+
+	const settle = () =>
+		new Promise<void>((resolve) =>
+			requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+		);
+
+	it('applies a transform on hover under full motion', async () => {
+		document.documentElement.setAttribute('data-motion', 'full');
+		const node = makeNode();
+		const action = magnetic(node, 0.5);
+		try {
+			move(node, 90, 90);
+			await settle();
+			expect(node.style.transform).not.toBe('');
+		} finally {
+			action.destroy();
+			node.remove();
+		}
+	});
+
+	it('clears the transform when reduced motion is toggled on at runtime', async () => {
+		document.documentElement.setAttribute('data-motion', 'full');
+		const node = makeNode();
+		const action = magnetic(node, 0.5);
+		try {
+			move(node, 90, 90);
+			await settle();
+			expect(node.style.transform).not.toBe('');
+
+			// Flip to reduced without remounting — the next move must clear, not
+			// re-apply, the inline transform.
+			document.documentElement.setAttribute('data-motion', 'reduced');
+			move(node, 10, 10);
+			expect(node.style.transform).toBe('');
+		} finally {
+			action.destroy();
+			node.remove();
+		}
+	});
+
+	it('never transforms when reduced motion is active at mount', () => {
+		document.documentElement.setAttribute('data-motion', 'reduced');
+		const node = makeNode();
+		const action = magnetic(node, 0.5);
+		try {
+			move(node, 90, 90);
+			expect(node.style.transform).toBe('');
+		} finally {
+			action.destroy();
+			node.remove();
+		}
 	});
 });

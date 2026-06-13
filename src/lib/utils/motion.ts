@@ -46,6 +46,11 @@ export async function startLenis(): Promise<void> {
 
 	const { default: Lenis } = await import('lenis');
 
+	// The dynamic import is async: the user may have toggled reduced motion (or a
+	// concurrent caller may have won the race) while it loaded. Re-check before
+	// instantiating so a mid-import reduce cannot leave smooth scroll running.
+	if (prefersReducedMotion() || lenisInstance) return;
+
 	const lenis = new Lenis({
 		duration: 1.05,
 		easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -166,12 +171,13 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
  * Svelte action that gives an element a magnetic hover — translate it toward
  * the cursor by a small fraction of the offset, with smooth release.
  *
- * `strength === 0` (or reduced motion) makes the action a no-op so callers can
- * pass the strength conditionally without branching the template.
+ * `strength === 0` makes the action a no-op so callers can pass the strength
+ * conditionally without branching the template. Reduced motion is honored live
+ * in the pointer handler (not snapshotted at mount), so the in-page toggle can
+ * disable — or re-enable — the effect at runtime without remounting the element.
  */
 export function magnetic(node: HTMLElement, strength = 0.22) {
-	const reduced = prefersReducedMotion();
-	if (reduced || strength === 0) return { destroy() {} };
+	if (strength === 0) return { destroy() {} };
 
 	let raf = 0;
 	let tx = 0;
@@ -191,6 +197,18 @@ export function magnetic(node: HTMLElement, strength = 0.22) {
 	}
 
 	function onMove(e: PointerEvent) {
+		// Honor a runtime switch to reduced motion: snap back to rest and stop
+		// applying transforms. CSS reduced-motion guards do not cover this inline
+		// transform, so the check must live here, read fresh on every move.
+		if (prefersReducedMotion()) {
+			targetX = targetY = tx = ty = 0;
+			if (raf) {
+				cancelAnimationFrame(raf);
+				raf = 0;
+			}
+			node.style.transform = '';
+			return;
+		}
 		const rect = node.getBoundingClientRect();
 		const cx = rect.left + rect.width / 2;
 		const cy = rect.top + rect.height / 2;
