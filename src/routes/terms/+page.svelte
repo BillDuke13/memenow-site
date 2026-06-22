@@ -15,7 +15,7 @@
 
 <EditorialHero
 	eyebrowLeft="Legal · Terms"
-	eyebrowRight="Updated 2026-05-06"
+	eyebrowRight="Updated 2026-06-21"
 	title="Plain terms, short."
 	lede="The conditions under which we publish memenow.xyz."
 	cue="Scroll · Read the terms"
@@ -38,8 +38,7 @@
 <Chapter id="offer" number="03" label="No offer" title="Nothing here is a financial offer.">
 	<p class="c-chapter__lede">
 		Nothing on this site is an offer to sell, a solicitation to buy, or a recommendation regarding
-		any security, fund interest, or financial instrument. See our
-		<a href="/disclaimer">disclaimer</a>.
+		any security, fund interest, or financial instrument.
 	</p>
 </Chapter>
 
