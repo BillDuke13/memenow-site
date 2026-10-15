@@ -2,38 +2,34 @@
 	import { page } from '$app/state';
 	import EditorialHero from '$lib/components/home/EditorialHero.svelte';
 	import ArtifactCta from '$lib/components/ui/ArtifactCta.svelte';
+	import { messages, useLocale } from '$lib/i18n';
 
 	// `status` must be the HTTP status from `page`, not the deprecated global
 	// `window.status` (an empty string) that an undeclared `status` would resolve to.
 	const status = $derived(page.status);
 	const isNotFound = $derived(page.status === 404);
-	const title = $derived(isNotFound ? 'This path leads nowhere.' : 'A break in the signal.');
-	// Always render a pre-defined user-facing copy. `page.error?.message` is set
-	// by SvelteKit's `error()` helper or by an unhandled server-side throw and
-	// can leak implementation details (e.g. database error strings) — server
-	// observability is the right place for the original message.
-	const lede = $derived(
-		isNotFound
-			? 'The page you were looking for has moved, been renamed, or never existed.'
-			: 'Something went wrong on our end. Try again in a moment.'
-	);
+	const locale = useLocale();
+	const t = $derived(messages[locale()].error);
+
+	const title = $derived(isNotFound ? t.notFoundTitle : t.serverErrorTitle);
+	// Always render pre-defined user-facing copy. `page.error?.message` can leak
+	// implementation details (e.g. database error strings) — server observability
+	// is the right place for the original message.
+	const lede = $derived(isNotFound ? t.notFoundLede : t.serverErrorLede);
+	const eyebrowRight = $derived(isNotFound ? t.notFoundLabel : t.errorLabel);
+	const eyebrowLeft = $derived(t.statusLabel.replace('{status}', String(status)));
+	const homeHref = $derived(`/${locale()}/`);
 </script>
 
 <svelte:head>
-	<title>{status} · memenow</title>
+	<title>{t.meta.title.replace('{status}', String(status))}</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<EditorialHero
-	eyebrowLeft={`Status · ${status}`}
-	eyebrowRight={isNotFound ? 'Not found' : 'Error'}
-	{title}
-	{lede}
-	cue="Return · Home"
-/>
+<EditorialHero {eyebrowLeft} {eyebrowRight} {title} {lede} cue={t.cueHome} />
 
 <section class="c-chapter">
 	<div class="c-chapter__inner c-chapter__inner--center">
-		<ArtifactCta href="/" palette="celestial" size="lg">Return home</ArtifactCta>
+		<ArtifactCta href={homeHref} palette="celestial" size="lg">{t.returnHome}</ArtifactCta>
 	</div>
 </section>

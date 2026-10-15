@@ -117,12 +117,11 @@
 				</li>
 				<li>
 					<strong><code>align="split"</code></strong> — sticky title in the left column, body /
-					image / CTA flow in the right. Used by the Yinyang and Quant chapters on
-					<code>/</code> and <code>/products</code>.
+					image / CTA flow in the right.
 				</li>
 				<li>
 					<strong><code>banner</code></strong> — image extends to the chapter's inner edge with a
-					21:9 aspect ratio. Used by the Quant chapter on the home page.
+					21:9 aspect ratio.
 				</li>
 				<li>
 					<strong><code>headless</code></strong> — drops the <code>01 — Label</code> row and keeps
@@ -132,11 +131,10 @@
 			</ul>
 			<p>
 				The <code>Chapter</code> component has dedicated browser tests in
-				<code>Chapter.svelte.test.ts</code> covering each alignment and the
-				<code>headless</code> behavior.
+				<code>Chapter.svelte.test.ts</code> covering each alignment and the options above.
 			</p>
 
-			<h2>Layout</h2>
+			<h2>Layout components</h2>
 			<table>
 				<thead>
 					<tr>
@@ -147,21 +145,21 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><code>WorldLayer</code></td>
-						<td><code>lib/components/layout/WorldLayer.svelte</code></td>
-						<td>
-							Persistent fixed underlay mounted once by <code>AppShell</code>: per-route fog plus a
-							faint Tai Chi geometry watermark, with reduced-motion-aware
-							<code>--world-scroll</code> drift. Decorative and <code>aria-hidden</code>.
-						</td>
-					</tr>
-					<tr>
 						<td><code>AppShell</code></td>
 						<td><code>lib/components/layout/AppShell.svelte</code></td>
 						<td>
-							Mounts the persistent <code>WorldLayer</code> underlay, a skip-link, the always-on
-							<code>FloatingDock</code>, <code>&lt;main id="main"&gt;</code> with the slotted page,
-							and an optional <code>Footer</code>.
+							Root shell mounted in <code>+layout.svelte</code>. Stacks <code>WorldLayer</code>, the
+							skip-link, <code>FloatingDock</code>, <code>&lt;main&gt;</code>, and the
+							<code>Footer</code>.
+						</td>
+					</tr>
+					<tr>
+						<td><code>WorldLayer</code></td>
+						<td><code>lib/components/layout/WorldLayer.svelte</code></td>
+						<td>
+							Persistent three-plane ink-wash underlay. Renders a painted static fallback on SSR /
+							no-WebGL, and dynamically mounts <code>WorldCanvas</code> (Threlte + Three.js) on the
+							client.
 						</td>
 					</tr>
 					<tr>
@@ -169,17 +167,18 @@
 						<td><code>lib/components/layout/FloatingDock.svelte</code></td>
 						<td>
 							Glass-pill primary nav fixed at the bottom of the viewport. Reads
-							<code>primaryNav</code> from <code>lib/data/navigation.ts</code> and shows
-							<code>aria-current="page"</code> on the active route.
+							<code>primaryNav</code> and shows <code>aria-current="page"</code> on the active
+							route. Hosts <code>LocaleSwitch</code>, <code>ThemeSwitch</code>, and
+							<code>MotionSwitch</code>.
 						</td>
 					</tr>
 					<tr>
 						<td><code>Footer</code></td>
 						<td><code>lib/components/layout/Footer.svelte</code></td>
 						<td>
-							A lead lockup column plus <code>Memenow</code> and <code>Legal</code> nav columns
-							(GitHub lives under Legal), then a copyright + investor-disclaimer row. Reads
-							<code>footerSections</code> from <code>lib/data/navigation.ts</code>.
+							A lead lockup column plus <code>memenow</code> and <code>Legal</code> nav columns,
+							then a localized copyright row. Reads <code>footerSections</code> from
+							<code>lib/data/navigation.ts</code>.
 						</td>
 					</tr>
 				</tbody>
@@ -202,6 +201,17 @@
 							The studio's signature call-to-action. Coral pink diamond suffix, magnetic hover.
 							<code>palette</code> picks the surface treatment (<code>celestial</code> outline /
 							<code>ritual</code> filled). Drops the magnet under reduced motion.
+						</td>
+					</tr>
+					<tr>
+						<td><code>LocaleSwitch</code></td>
+						<td><code>lib/components/ui/LocaleSwitch.svelte</code></td>
+						<td>
+							Bilingual link (<code>中 / EN</code>) in the floating dock. Points at the current page
+							under the other locale (<code>switchLocalePath</code>), so SSR renders the correct
+							destination with no client state and crawlers can discover the alternate language.
+							Carries <code>data-sveltekit-noscroll</code> to keep reading position; the server
+							persists the choice to the <code>memenow.locale</code> cookie.
 						</td>
 					</tr>
 					<tr>

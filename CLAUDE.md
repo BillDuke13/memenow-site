@@ -20,12 +20,21 @@ SvelteKit application deployed to Cloudflare Workers via `@sveltejs/adapter-clou
   `components`, `world-layer`) and declares the `dark` custom variant. No Tailwind plugins are
   currently registered. Components in this repo are primarily `.c-*` BEM primitives consuming design
   tokens from `lib/styles/tokens.css`, not raw Tailwind utility soup.
+- **Bilingual URLs (`/zh` + `/en`).** Every content URL carries its locale under the
+  `[locale=locale]` route segment (matcher: `src/params/locale.ts`). All copy lives in the
+  typed zh/en dictionary `src/lib/i18n/messages.ts`; components read the locale through
+  `useLocale()` (a component-tree context getter provided by the root layout — never
+  module-level state, which would leak across SSR requests). `hooks.server.ts` owns the
+  redirect policy: retired URLs 301, legacy unprefixed page URLs 302 to the negotiated
+  locale (cookie `memenow.locale`, else the first Accept-Language tag). `src/lib/i18n/locale-path.ts`
+  holds the pure URL/redirect functions; keep the policy there and unit-tested, not inline
+  in the hook.
 - **Theme + route-family attributes.** `<html>` carries `data-theme` (light/dark) and
-  `data-route-family` (`legal` for /privacy, /terms, /disclaimer; `threshold` everywhere else).
+  `data-route-family` (`legal` for /privacy, /terms; `threshold` everywhere else).
   Both are double-driven: `app.html` ships an inline boot script for theme, `hooks.server.ts`
-  rewrites the route-family placeholder for SSR, and the root layout's `$effect` mirrors them on
-  client navigations. Per-route fog and scrim styles in `lib/styles/scene.css` and `world-layer.css`
-  read these attributes via `:where([data-route-family='legal'])` etc.
+  rewrites the route-family placeholder and `lang` for SSR, and the root layout's `$effect`
+  mirrors them on client navigations. Per-route fog and scrim styles in `lib/styles/scene.css`
+  and `world-layer.css` read these attributes via `:where([data-route-family='legal'])` etc.
 - **Motion respects `prefers-reduced-motion: reduce` everywhere.** `lib/utils/motion.ts` (`startLenis`,
   `reveal` action, `magnetic` action) returns no-op early when reduced motion is requested. The
   matching CSS in `components.css` strips transforms/clip-paths under the same media query. New
@@ -76,18 +85,24 @@ Chromium is not installed (`pnpm exec playwright install chromium`).
 
 - `src/routes/` — SvelteKit file-based routing.
   - `layout.css` — Tailwind v4 entrypoint; imports `lib/styles/{tokens,scene,layout,components,world-layer}.css`.
-  - `+layout.svelte` — boots Lenis (smooth scroll) on mount, drives the reading-progress hairline and the world layer's `--world-scroll` parallax, and mirrors `data-route-family` on SPA navigations.
-  - `+page.svelte` — home (editorial hero + four chapters).
-  - `products/`, `products/yinyang/`, `products/quant/`, `company/`, `privacy/`, `terms/`, `disclaimer/` — content routes.
-  - `sitemap.xml/+server.ts` — prerendered sitemap; URL list lives in `lib/data/sitemap.ts`.
-  - `+error.svelte` — 404 / 500 fallback (`noindex`); reuses `EditorialHero` so errors stay in the continuous scene.
-- `src/hooks.server.ts` — SSR `Handle` that replaces the `data-route-family="pending"` placeholder in
-  `app.html` with `legal` or `threshold` so per-route fog is correct on the first paint.
+  - `+layout.server.ts` — exposes `locale`; it must read `params.locale` (that read is the
+    load-invalidation contract that re-runs the layout on cross-language SPA navigations).
+  - `+layout.svelte` — boots Lenis (smooth scroll) on mount, drives the reading-progress hairline and the world layer's `--world-scroll` parallax, mirrors `lang`/`data-route-family` on SPA navigations, and emits hreflang/`og:locale` head tags.
+  - `[locale=locale]/` — every content page (home, products, products/yinyang, company, privacy, terms).
+  - `sitemap.xml/+server.ts` — prerendered sitemap (all locales, hreflang alternates); URL list lives in `lib/data/sitemap.ts`.
+  - `+error.svelte` — localized 404 / 500 fallback (`noindex`); reuses `EditorialHero` so errors stay in the continuous scene.
+- `src/params/locale.ts` — param matcher accepting exactly `zh` / `en`.
+- `src/hooks.server.ts` — SSR `Handle`: locale redirect policy (see above), `memenow.locale`
+  cookie persistence (skipped for data requests so hover prefetch can't rewrite the
+  preference), plus the `data-route-family="pending"` and `lang` placeholder rewrites.
 - `src/app.html` — SvelteKit document shell. Keep:
   - `data-sveltekit-preload-data="hover"` and the `text-scale` meta.
-  - `data-theme` boot script that reads `localStorage.memenow.theme` and falls back to
-    `prefers-color-scheme`. Removing it reintroduces a light-flash on dark systems.
+  - `data-theme` / `data-motion` boot scripts that read `localStorage` and fall back to
+    `prefers-color-scheme` / `prefers-reduced-motion`. Removing them reintroduces a
+    light-flash (and a motion flash) on first paint.
   - `data-route-family="pending"` on `<html>` — replaced by `hooks.server.ts` on SSR.
+  - Static `lang="en"` is a placeholder only — `hooks.server.ts` rewrites it per request,
+    and there is deliberately no locale boot script (the URL is the locale's source of truth).
 - `src/app.d.ts` — global SvelteKit types backed by Cloudflare runtime types; do not regenerate by hand.
 - `src/worker-configuration.d.ts` — generated by `pnpm cf-typegen`; never edit by hand.
 - `src/lib/` — code shared via the `$lib` alias.
@@ -96,9 +111,12 @@ Chromium is not installed (`pnpm exec playwright install chromium`).
     `reveal`): `Pullquote`, `Timeline`, `ComparisonTable`, `ImagePair`, `StatCard`, `SectionBreak`.
   - `components/home/` — `EditorialHero.svelte`, `Chapter.svelte` (narrative scroll primitives).
   - `components/layout/` — `AppShell.svelte`, `WorldLayer.svelte` (persistent continuous-world underlay), `Footer.svelte`, `FloatingDock.svelte`.
-  - `components/ui/` — `ThemeSwitch`, `ArtifactCta`. (The coral diamond is a CSS primitive,
+  - `components/ui/` — `ThemeSwitch`, `MotionSwitch`, `LocaleSwitch`, `ArtifactCta`. (The coral diamond is a CSS primitive,
     `.c-seal` in `components.css`, not a component.)
-  - `data/` — `navigation.ts` (primary nav + footer), `products.ts`, `sitemap.ts` (URL × lastmod).
+  - `data/` — `navigation.ts` (primary nav + footer), `sitemap.ts` (URL × lastmod), `site.ts` (canonical origin).
+  - `i18n/` — `messages.ts` (typed zh/en dictionary; zh owns the schema), `locale.svelte.ts`
+    (`provideLocale`/`useLocale` context), `locale-path.ts` (prefix stripping, negotiation,
+    redirect decisions — pure and unit-tested).
   - `styles/` — `tokens.css` (palette, type, spacing, motion), `scene.css` (per-route fog), `layout.css`
     (`.l-*` utilities), `components.css` (`.c-*` primitives), `world-layer.css` (persistent Tai Chi underlay + per-route fog carrier).
   - `utils/` — `cn.ts` (plain `clsx` wrapper, no `tailwind-merge`), `motion.ts` (Lenis lifecycle +
@@ -111,6 +129,10 @@ Chromium is not installed (`pnpm exec playwright install chromium`).
   - `images/` — hero and chapter imagery (avif/webp/png).
   - `og/` — Open Graph share images.
 - `scripts/build-brand-assets.py` — derives every brand variant. Re-run after replacing a master.
+- `DESIGN.md` — company visual contract (`mmn-scroll-v1`): native chapter cascade,
+  paper-and-ink metrics, and adapter notes for this site and other memenow fronts.
+  Product motifs (Tai Chi world, five-element color, diamond mark) stay assets;
+  do not promote them into language primitives.
 - `docs/` — HTML documentation for humans. The Markdown files at the repo root (this file,
   `AGENTS.md`, `README.md`) are for tooling and contributors; deeper architectural / design notes
   belong under `docs/` in HTML.
@@ -150,29 +172,30 @@ Chromium is not installed (`pnpm exec playwright install chromium`).
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **memenow-site** (263 symbols, 302 relationships, 4 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **memenow-site** (4727 symbols, 6057 relationships, 8 execution flows).
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> Index stale? Run `node .gitnexus/run.cjs analyze --index-only` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? Bootstrap with `npx`, `bunx`, or `pnpm dlx` — e.g. `bunx gitnexus@latest analyze` (npm 11 npx crash; #1939).
 
 ## Always Do
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
-- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+- **MUST run impact before editing.** Use `impact({target: "symbolName", direction: "upstream"})` or `node .gitnexus/run.cjs impact "symbolName" --direction upstream --repo .`; report callers, processes, and risk. Never substitute grep for graph analysis.
+- **MUST analyze graph changes before committing.** Use `detect_changes({scope: "all"})` (MCP) or `node .gitnexus/run.cjs detect-changes --scope all --repo .` (CLI fallback). `partial: true` or `truncated: true` is not a clean check — a zero means unseen, not unaffected; re-run it. For regression review: `detect_changes({scope: "compare", base_ref: "main"})` or `node .gitnexus/run.cjs detect-changes --scope compare --base-ref "main" --repo .`.
+- MUST warn on HIGH/CRITICAL `risk` pre-edit; never use `riskSharedAxes` to waive a HIGH/CRITICAL `risk` warning. Compare File/symbol: MCP File omits axes; Graph-RAG expands File.
+- **MUST treat `risk: UNKNOWN` as unresolved, not as low.** An empty caller set is not evidence the symbol is unused — it can also mean the callers are not resolvable by the index (plain-object property access, dynamic dispatch, cross-language calls). `impact` pairs `UNKNOWN` with a `riskNote` saying so. Confirm with a text search before treating the symbol as safe to change or delete; do not proceed on the strength of a zero.
+- **MUST use `query({search_query: "concept"})` for concepts/flows, `context({name: "symbolName"})` for a named symbol, or `impact` for blast radius, on read-only callers, dependencies, imports, or execution flow.** Graph first; text search only for empty/`UNKNOWN`/literals.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+- NEVER edit a function, class, or method before MCP/CLI impact analysis.
+- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis, and never read `UNKNOWN` as an all-clear — it means the walk could not answer, which is the one verdict that requires confirming by other means.
+- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
+- NEVER commit before MCP/CLI graph change analysis.
 
 ## Resources
 
 | Resource | Use for |
-|----------|---------|
+| --- | --- |
 | `gitnexus://repo/memenow-site/context` | Codebase overview, check index freshness |
 | `gitnexus://repo/memenow-site/clusters` | All functional areas |
 | `gitnexus://repo/memenow-site/processes` | All execution flows |
@@ -181,13 +204,13 @@ This project is indexed by GitNexus as **memenow-site** (263 symbols, 302 relati
 ## CLI
 
 | Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+| --- | --- |
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
 <!-- prettier-ignore-end -->

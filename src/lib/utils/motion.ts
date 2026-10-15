@@ -128,22 +128,29 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
 
 	if (splitWords) {
 		const text = node.textContent ?? '';
-		const words = text.trim().split(/\s+/);
-		// Build via DOM nodes (not innerHTML) so word content is treated as text.
-		// textContent round-trips entity-decoded characters; concatenating into an
-		// HTML string would let `<` / `>` parse as markup.
-		while (node.firstChild) node.removeChild(node.firstChild);
-		words.forEach((word, i) => {
-			const outer = document.createElement('span');
-			outer.className = 'reveal-word';
-			const inner = document.createElement('span');
-			inner.className = 'reveal-word-inner';
-			inner.style.setProperty('--i', String(i));
-			inner.textContent = word;
-			if (i < words.length - 1) inner.append(' ');
-			outer.appendChild(inner);
-			node.appendChild(outer);
-		});
+		const hasCJK = /[\u4e00-\u9fa5]/.test(text);
+		// DESIGN.md: "Word-by-word English reveals MUST NOT be copied onto Chinese
+		// or other unspaced scripts. Use a line or block reveal."
+		if (hasCJK) {
+			node.classList.add('reveal-fade');
+		} else {
+			const words = text.trim().split(/\s+/);
+			// Build via DOM nodes (not innerHTML) so word content is treated as text.
+			// textContent round-trips entity-decoded characters; concatenating into an
+			// HTML string would let `<` / `>` parse as markup.
+			while (node.firstChild) node.removeChild(node.firstChild);
+			words.forEach((word, i) => {
+				const outer = document.createElement('span');
+				outer.className = 'reveal-word';
+				const inner = document.createElement('span');
+				inner.className = 'reveal-word-inner';
+				inner.style.setProperty('--i', String(i));
+				inner.textContent = word;
+				if (i < words.length - 1) inner.append(' ');
+				outer.appendChild(inner);
+				node.appendChild(outer);
+			});
+		}
 	}
 
 	node.dataset.revealed = 'false';

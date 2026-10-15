@@ -1,4 +1,6 @@
-// Single source of truth for the public sitemap.
+// Single source of truth for the public sitemap. Paths are the LOGICAL routes
+// (no locale prefix); `sitemap.xml/+server.ts` expands each one across the
+// supported locales with mutual hreflang alternates.
 //
 // `lastmod` is frozen per route (a hand-bumped ISO date) — search crawlers
 // discount the "every URL changed today" pattern, so updating these stamps is a
@@ -8,10 +10,10 @@
 // only allows a fixed set of named exports from `+server.ts`. Sharing the array
 // with the route handler's tests keeps the URL list authoritative in one place.
 export const SITEMAP_ROUTES: ReadonlyArray<readonly [path: string, lastmod: string]> = [
-	['/', '2026-06-21'],
-	['/products', '2026-06-21'],
-	['/products/yinyang', '2026-06-21'],
-	['/company', '2026-06-21'],
-	['/privacy', '2026-05-28'],
-	['/terms', '2026-06-21']
+	['/', '2026-10-15'],
+	['/products', '2026-10-15'],
+	['/products/yinyang', '2026-10-15'],
+	['/company', '2026-10-15'],
+	['/privacy', '2026-10-15'],
+	['/terms', '2026-10-15']
 ];

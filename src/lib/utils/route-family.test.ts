@@ -27,4 +27,15 @@ describe('resolveRouteFamily', () => {
 		expect(resolveRouteFamily('/privately-held')).toBe('threshold');
 		expect(resolveRouteFamily('/terms-and-conditions')).toBe('threshold');
 	});
+
+	it('strips the locale prefix before classifying', () => {
+		expect(resolveRouteFamily('/zh/privacy')).toBe('legal');
+		expect(resolveRouteFamily('/en/terms')).toBe('legal');
+		expect(resolveRouteFamily('/zh')).toBe('threshold');
+		expect(resolveRouteFamily('/en/products')).toBe('threshold');
+	});
+
+	it('does not mistake a locale lookalike for a prefix', () => {
+		expect(resolveRouteFamily('/zhzh/privacy')).toBe('threshold');
+	});
 });

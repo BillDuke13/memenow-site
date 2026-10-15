@@ -49,11 +49,11 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            http://127.0.0.1:8787/
-            http://127.0.0.1:8787/products
-            http://127.0.0.1:8787/products/yinyang
-            http://127.0.0.1:8787/products/quant
-            http://127.0.0.1:8787/company
+            http://127.0.0.1:8787/zh
+            http://127.0.0.1:8787/zh/products
+            http://127.0.0.1:8787/zh/products/yinyang
+            http://127.0.0.1:8787/zh/company
+            http://127.0.0.1:8787/zh/terms
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true

@@ -3,13 +3,16 @@
 	import Footer from './Footer.svelte';
 	import FloatingDock from './FloatingDock.svelte';
 	import WorldLayer from './WorldLayer.svelte';
+	import { messages, useLocale } from '$lib/i18n';
 
 	let { children, footer = true }: { children: Snippet; footer?: boolean } = $props();
+	const locale = useLocale();
+	const common = $derived(messages[locale()].common);
 </script>
 
 <WorldLayer />
 
-<a class="l-skip-link" href="#main">Skip to main content</a>
+<a class="l-skip-link" href="#main">{common.skipToContent}</a>
 
 <FloatingDock />
 

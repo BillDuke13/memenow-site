@@ -65,6 +65,31 @@ describe('reveal action — splitWords', () => {
 	});
 });
 
+describe('reveal action — CJK titles', () => {
+	let host: HTMLElement | null = null;
+
+	afterEach(() => {
+		host?.remove();
+		host = null;
+	});
+
+	it('fades CJK titles instead of word-splitting them', () => {
+		const node = document.createElement('h1');
+		node.textContent = '让 AI 成为你的合伙人。';
+		document.body.appendChild(node);
+		host = node;
+
+		reveal(node, { splitWords: true });
+
+		// DESIGN.md: word-by-word reveals must not be copied onto unspaced
+		// scripts — CJK text keeps its DOM and gets the block fade instead.
+		expect(node.querySelectorAll('.reveal-word').length).toBe(0);
+		expect(node.classList.contains('reveal-fade')).toBe(true);
+		expect(node.textContent).toBe('让 AI 成为你的合伙人。');
+		expect(node.dataset.revealed).toBe('false');
+	});
+});
+
 describe('reveal action — non-splitting path', () => {
 	let host: HTMLElement | null = null;
 

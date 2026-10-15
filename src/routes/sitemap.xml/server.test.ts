@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { GET } from './+server';
 import { SITEMAP_ROUTES as ROUTES } from '$lib/data/sitemap';
+import { SUPPORTED_LOCALES, withLocale } from '$lib/i18n';
+
+const BASE = 'https://memenow.xyz';
 
 describe('GET /sitemap.xml', () => {
 	it('returns XML with the correct content-type', async () => {
@@ -13,12 +16,15 @@ describe('GET /sitemap.xml', () => {
 		expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
 	});
 
-	it('lists every public route exactly once', async () => {
+	it('lists every route in every supported locale exactly once', async () => {
 		const response = await invoke();
 		const body = await response.text();
 		for (const [path] of ROUTES) {
-			const occurrences = body.split(`<loc>https://memenow.xyz${path}</loc>`).length - 1;
-			expect(occurrences, `expected exactly one entry for ${path}`).toBe(1);
+			for (const locale of SUPPORTED_LOCALES) {
+				const loc = `${BASE}${withLocale(path, locale)}`;
+				const occurrences = body.split(`<loc>${loc}</loc>`).length - 1;
+				expect(occurrences, `expected exactly one entry for ${loc}`).toBe(1);
+			}
 		}
 	});
 
@@ -26,27 +32,46 @@ describe('GET /sitemap.xml', () => {
 		const response = await invoke();
 		const body = await response.text();
 		const lastmods = [...body.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1]);
-		expect(lastmods.length).toBe(ROUTES.length);
+		expect(lastmods.length).toBe(ROUTES.length * SUPPORTED_LOCALES.length);
 		for (const value of lastmods) {
 			expect(value).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 		}
 	});
 
-	it('pairs each path with its frozen lastmod from ROUTES', async () => {
+	it('pairs each localized path with its frozen lastmod from ROUTES', async () => {
 		const response = await invoke();
 		const body = await response.text();
+		const urlBlocks = body.match(/<url>[\s\S]*?<\/url>/g) ?? [];
 		for (const [path, lastmod] of ROUTES) {
-			expect(body, `expected ${path} to be paired with lastmod=${lastmod}`).toContain(
-				`<loc>https://memenow.xyz${path}</loc>\n\t\t<lastmod>${lastmod}</lastmod>`
-			);
+			for (const locale of SUPPORTED_LOCALES) {
+				const loc = `${BASE}${withLocale(path, locale)}`;
+				const block = urlBlocks.find((b) => b.includes(`<loc>${loc}</loc>`));
+				expect(block, `expected a <url> for ${loc}`).toBeDefined();
+				expect(block).toContain(`<lastmod>${lastmod}</lastmod>`);
+			}
 		}
 	});
 
-	it('produces well-formed urlset XML', async () => {
+	it('annotates every url with zh, en, and x-default alternates', async () => {
+		const response = await invoke();
+		const body = await response.text();
+		const urlBlocks = body.match(/<url>[\s\S]*?<\/url>/g) ?? [];
+		expect(urlBlocks.length).toBe(ROUTES.length * SUPPORTED_LOCALES.length);
+		for (const block of urlBlocks) {
+			expect(block.match(/<xhtml:link /g)?.length).toBe(SUPPORTED_LOCALES.length + 1);
+			expect(block).toContain('hreflang="zh"');
+			expect(block).toContain('hreflang="en"');
+			expect(block).toContain(`hreflang="x-default" href="${BASE}/"`);
+		}
+	});
+
+	it('produces well-formed urlset XML with the xhtml namespace', async () => {
 		const response = await invoke();
 		const body = await response.text();
 		expect(body.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
-		expect(body).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+		expect(body).toContain(
+			'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+		);
 		expect(body.trim().endsWith('</urlset>')).toBe(true);
 	});
 });

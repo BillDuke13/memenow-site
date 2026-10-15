@@ -13,6 +13,8 @@ import MotionSwitch from './MotionSwitch.svelte';
 
 const STORAGE_KEY = 'memenow.motion';
 
+// Mounted without a layout ancestor, useLocale() falls back to DEFAULT_LOCALE
+// — so the aria-labels asserted below are the Chinese ones.
 describe('MotionSwitch', () => {
 	beforeEach(() => {
 		document.documentElement.setAttribute('data-motion', 'full');
@@ -29,22 +31,22 @@ describe('MotionSwitch', () => {
 	it('mirrors the document motion state on mount', async () => {
 		document.documentElement.setAttribute('data-motion', 'reduced');
 		const screen = await render(MotionSwitch);
-		await expect.element(screen.getByLabelText('Allow motion')).toBeInTheDocument();
+		await expect.element(screen.getByLabelText('允许动效')).toBeInTheDocument();
 	});
 
 	it('reduces motion on click, persists the choice, and stops Lenis', async () => {
 		const screen = await render(MotionSwitch);
-		await screen.getByLabelText('Reduce motion').click();
+		await screen.getByLabelText('减弱动效').click();
 		expect(document.documentElement.getAttribute('data-motion')).toBe('reduced');
 		expect(localStorage.getItem(STORAGE_KEY)).toBe('reduced');
 		expect(lenis.stop).toHaveBeenCalled();
-		await expect.element(screen.getByLabelText('Allow motion')).toBeInTheDocument();
+		await expect.element(screen.getByLabelText('允许动效')).toBeInTheDocument();
 	});
 
 	it('re-allows motion on a second click and restarts Lenis', async () => {
 		const screen = await render(MotionSwitch);
-		await screen.getByLabelText('Reduce motion').click();
-		await screen.getByLabelText('Allow motion').click();
+		await screen.getByLabelText('减弱动效').click();
+		await screen.getByLabelText('允许动效').click();
 		expect(document.documentElement.getAttribute('data-motion')).toBe('full');
 		expect(localStorage.getItem(STORAGE_KEY)).toBe('full');
 		expect(lenis.start).toHaveBeenCalled();
@@ -58,10 +60,10 @@ describe('MotionSwitch', () => {
 		});
 		try {
 			const screen = await render(MotionSwitch);
-			await screen.getByLabelText('Reduce motion').click();
+			await screen.getByLabelText('减弱动效').click();
 			expect(setItem).toHaveBeenCalledWith(STORAGE_KEY, 'reduced');
 			expect(document.documentElement.getAttribute('data-motion')).toBe('reduced');
-			await expect.element(screen.getByLabelText('Allow motion')).toBeInTheDocument();
+			await expect.element(screen.getByLabelText('允许动效')).toBeInTheDocument();
 		} finally {
 			setItem.mockRestore();
 		}

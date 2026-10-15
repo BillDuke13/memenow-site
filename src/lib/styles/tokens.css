@@ -56,10 +56,15 @@
 	--status-info: oklch(58% 0.09 250);
 
 	/* Type — Newsreader (variable, opsz) for display, Inter (variable, opsz) for
-	   body. A serif display face over a sans body gives a clear editorial
-	   hierarchy; both carry an optical-size axis (see font-optical-sizing below). */
-	--font-display: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
-	--font-body: 'Inter Variable', 'Inter', -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+	   body, paired with elegant CJK serif/sans font families for Chinese. CJK
+	   runs on system fonts only (no webfont): Noto/Source Han where installed,
+	   Songti on Apple, SimSun as the deliberate Windows serif fallback. */
+	--font-display:
+		'Newsreader Variable', 'Newsreader', 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC',
+		STSong, SimSun, Georgia, 'Times New Roman', serif;
+	--font-body:
+		'Inter Variable', 'Inter', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+		-apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
 
 	/* Font weights — tokenized so a weight change is one edit, not a grep */
@@ -326,4 +331,24 @@ a:hover {
 	transition-duration: 0.01ms !important;
 	scroll-behavior: auto !important;
 	animation-timeline: auto !important;
+}
+
+/* ── CJK typography adjustments ───────────────────────
+   Hanzi has no case and reads worse tracked: zero every letter-spacing token
+   (component literals route through these tokens) and give CJK body text more
+   leading — ~1.7+ is the CJK norm (DESIGN.md typography). The matching label
+   uppercase/tracking reset lives at the end of components.css. */
+:lang(zh) {
+	--ls-display: 0;
+	--ls-heading: 0;
+	--ls-overline: 0;
+	--ls-ritual: 0;
+	--leading-normal: 1.72;
+	--leading-relaxed: 1.85;
+}
+
+/* CJK display type reads cramped at the Latin 0.95 line-height. */
+:lang(zh) .c-editorial-hero__title,
+:lang(zh) .c-chapter__title {
+	line-height: 1.18;
 }

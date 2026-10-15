@@ -143,7 +143,7 @@
 	font-weight: var(--font-weight-regular);
 	font-size: var(--type-display-xl);
 	line-height: 0.95;
-	letter-spacing: -0.045em;
+	letter-spacing: var(--ls-display);
 	margin: 0 0 clamp(1.5rem, 3vh, 2rem);
 	max-width: 16ch;
 	text-wrap: balance;
@@ -260,7 +260,7 @@
 .c-chapter__num {
 	font-family: var(--font-mono);
 	font-size: var(--type-overline);
-	letter-spacing: 0.18em;
+	letter-spacing: var(--ls-overline);
 	text-transform: uppercase;
 	color: var(--text-muted);
 	font-weight: var(--font-weight-medium);
@@ -291,7 +291,7 @@
 	font-weight: var(--font-weight-regular);
 	font-size: var(--type-heading-1);
 	line-height: 1;
-	letter-spacing: -0.045em;
+	letter-spacing: var(--ls-display);
 	margin: 0;
 	color: var(--text-primary);
 	max-width: 18ch;
@@ -744,7 +744,7 @@
 	.c-dock__item {
 		padding: var(--spacing-2) 0.55rem;
 		font-size: 0.625rem;
-		letter-spacing: 0.1em;
+		letter-spacing: var(--ls-overline);
 	}
 
 	.c-dock__divider {
@@ -793,7 +793,7 @@
 	font-family: var(--font-body);
 	font-size: var(--type-small);
 	font-weight: var(--font-weight-medium);
-	letter-spacing: 0.16em;
+	letter-spacing: var(--ls-overline);
 	text-transform: uppercase;
 	color: var(--text-primary);
 	background: var(--surface-base);
@@ -1364,4 +1364,31 @@
 	text-transform: uppercase;
 	color: var(--text-muted);
 	white-space: nowrap;
+}
+
+/* ── CJK labels ────────────────────────────────────────
+   Hanzi has no case: never uppercase zh labels (it would only mangle the
+   Latin runs inside them, e.g. "Yinyang Agent" → "YINYANG AGENT"), and skip
+   the Latin overline tracking entirely (tokens are already zeroed under
+   :lang(zh) in tokens.css; `normal` here covers anything not token-routed).
+   See DESIGN.md typography: "Do not force uppercase onto scripts that have
+   no case." */
+:lang(zh)
+	:where(
+		.c-editorial-hero__top,
+		.c-editorial-hero__cue,
+		.c-chapter__num,
+		.c-stack-grid__num,
+		.c-dock__item,
+		.c-artifact-cta,
+		.c-footer__title,
+		.c-pullquote__attr,
+		.c-stat-card__label,
+		.c-timeline__year,
+		.c-comparison__caption,
+		.c-comparison__th,
+		.c-section-break__label
+	) {
+	text-transform: none;
+	letter-spacing: normal;
 }

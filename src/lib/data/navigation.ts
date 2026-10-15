@@ -1,6 +1,5 @@
-// Single source of truth for site navigation. `primaryNav` feeds the
-// floating dock; `footerSections` feeds the bottom-of-page navigation.
-// Add new top-level routes here, not by editing the components.
+import { messages, type Locale } from '$lib/i18n';
+
 export interface NavLink {
 	label: string;
 	href: string;
@@ -13,37 +12,50 @@ export interface NavLink {
 	match?: string[];
 }
 
-export const homeLink: NavLink = { label: 'Home', href: '/' };
+// Single source of truth for site navigation. `getPrimaryNav` feeds the
+// floating dock; `getFooterSections` feeds the bottom-of-page navigation.
+// Add new top-level routes here, not by editing the components. All hrefs
+// carry the locale prefix — the locale is an explicit parameter because
+// there is no ambient "current locale" outside the component tree.
+export function getHomeLink(locale: Locale): NavLink {
+	return { label: messages[locale].common.home, href: `/${locale}` };
+}
 
-export const primaryNav: NavLink[] = [
-	{ label: 'Products', href: '/products' },
-	{ label: 'Company', href: '/company' },
-	{
-		label: 'Legal',
-		href: '/terms',
-		match: ['/privacy', '/terms']
-	}
-];
+export function getPrimaryNav(locale: Locale): NavLink[] {
+	const t = messages[locale].common;
+	return [
+		{ label: t.products, href: `/${locale}/products` },
+		{ label: t.company, href: `/${locale}/company` },
+		{
+			label: t.legal,
+			href: `/${locale}/terms`,
+			match: [`/${locale}/privacy`, `/${locale}/terms`]
+		}
+	];
+}
 
 export interface FooterSection {
 	title: string;
 	links: NavLink[];
 }
 
-export const footerSections: FooterSection[] = [
-	{
-		title: 'Memenow',
-		links: [
-			{ label: 'Products', href: '/products' },
-			{ label: 'Company', href: '/company' }
-		]
-	},
-	{
-		title: 'Legal',
-		links: [
-			{ label: 'Privacy', href: '/privacy' },
-			{ label: 'Terms', href: '/terms' },
-			{ label: 'GitHub', href: 'https://github.com/memenow', external: true }
-		]
-	}
-];
+export function getFooterSections(locale: Locale): FooterSection[] {
+	const t = messages[locale].common;
+	return [
+		{
+			title: t.brand,
+			links: [
+				{ label: t.products, href: `/${locale}/products` },
+				{ label: t.company, href: `/${locale}/company` }
+			]
+		},
+		{
+			title: t.legal,
+			links: [
+				{ label: t.privacy, href: `/${locale}/privacy` },
+				{ label: t.terms, href: `/${locale}/terms` },
+				{ label: 'GitHub', href: 'https://github.com/memenow', external: true }
+			]
+		}
+	];
+}

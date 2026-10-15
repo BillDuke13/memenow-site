@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { startLenis, stopLenis } from '$lib/utils/motion';
+	import { messages, useLocale } from '$lib/i18n';
+
+	const locale = useLocale();
+	const labels = $derived(messages[locale()].common.motion);
 
 	// `data-motion` on <html> is the single runtime source of truth: the app.html
 	// boot script seeds it from localStorage('memenow.motion') or the OS
@@ -45,7 +49,7 @@
 <button
 	type="button"
 	class="c-icon-switch"
-	aria-label={reduced ? 'Allow motion' : 'Reduce motion'}
+	aria-label={reduced ? labels.allow : labels.reduce}
 	onclick={toggle}
 >
 	{#if reduced}

@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { messages, useLocale } from '$lib/i18n';
 
 	type Theme = 'light' | 'dark';
 
+	const locale = useLocale();
+	const labels = $derived(messages[locale()].common.theme);
 	let theme = $state<Theme>('light');
 
 	// app.html boot script seeds `data-theme` from localStorage or system pref.
@@ -27,7 +30,7 @@
 <button
 	type="button"
 	class="c-icon-switch"
-	aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+	aria-label={theme === 'dark' ? labels.switchToLight : labels.switchToDark}
 	onclick={toggle}
 >
 	{#if theme === 'dark'}

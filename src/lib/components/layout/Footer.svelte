@@ -1,8 +1,14 @@
 <script lang="ts">
 	import MemenowMark from '$lib/components/brand/MemenowMark.svelte';
-	import { footerSections } from '$lib/data/navigation';
+	import { getFooterSections } from '$lib/data/navigation';
+	import { messages, useLocale } from '$lib/i18n';
 
 	const year = new Date().getFullYear();
+	const locale = useLocale();
+	const sections = $derived(getFooterSections(locale()));
+	const legalCopy = $derived(
+		messages[locale()].common.rightsReserved.replace('{year}', String(year))
+	);
 </script>
 
 <footer class="c-footer">
@@ -11,7 +17,7 @@
 			<div class="c-footer__col c-footer__col--lead">
 				<MemenowMark variant="lockup-horizontal" size="md" />
 			</div>
-			{#each footerSections as section (section.title)}
+			{#each sections as section (section.title)}
 				<div class="c-footer__col">
 					<span class="c-footer__title">{section.title}</span>
 					{#each section.links as link (link.href)}
@@ -27,7 +33,7 @@
 			{/each}
 		</div>
 		<div class="c-footer__legal">
-			<span>© {year} memenow</span>
+			<span>{legalCopy}</span>
 		</div>
 	</div>
 </footer>

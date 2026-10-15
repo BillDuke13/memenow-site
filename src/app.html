@@ -7,17 +7,16 @@
 		<meta name="color-scheme" content="light dark" />
 		<meta name="theme-color" content="#f2f5f9" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#0e1523" media="(prefers-color-scheme: dark)" />
-		<meta
-			name="description"
-			content="memenow — make AI your partner. A studio in Lewes, Delaware building AI you can audit and return to. The first is Yinyang."
-		/>
+		<!-- No static meta description here: every public page sets its own
+		     localized one via <svelte:head>, which does not de-duplicate — a
+		     global fallback would emit a second, English-first description. -->
 		<meta property="og:type" content="website" />
-		<meta property="og:title" content="memenow" />
-		<meta property="og:description" content="Make AI your partner." />
+		<!-- og:title / og:description / og:image / twitter:image are all set per
+		     route (localized) in each page's <svelte:head>; a global fallback
+		     would emit twice in SSR HTML because <svelte:head> does not
+		     de-duplicate identical `property`s — and the static copy would be
+		     English-only. -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<!-- og:image and twitter:image are intentionally set per route in each
-		     page's <svelte:head>; a global fallback would emit twice in SSR HTML
-		     because <svelte:head> does not de-duplicate identical `property`s. -->
 
 		<link rel="icon" href="/favicon.ico" sizes="any" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/brand/app-icon-32.png" />

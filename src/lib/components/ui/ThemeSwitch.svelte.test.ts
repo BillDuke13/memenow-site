@@ -4,6 +4,8 @@ import ThemeSwitch from './ThemeSwitch.svelte';
 
 const STORAGE_KEY = 'memenow.theme';
 
+// Mounted without a layout ancestor, useLocale() falls back to DEFAULT_LOCALE
+// — so the aria-labels asserted below are the Chinese ones.
 describe('ThemeSwitch', () => {
 	beforeEach(() => {
 		document.documentElement.setAttribute('data-theme', 'light');
@@ -18,22 +20,22 @@ describe('ThemeSwitch', () => {
 	it('mirrors the document theme on mount', async () => {
 		document.documentElement.setAttribute('data-theme', 'dark');
 		const screen = await render(ThemeSwitch);
-		await expect.element(screen.getByLabelText('Switch to light theme')).toBeInTheDocument();
+		await expect.element(screen.getByLabelText('切换至明亮主题')).toBeInTheDocument();
 	});
 
 	it('toggles to dark on click and persists to localStorage', async () => {
 		const screen = await render(ThemeSwitch);
-		const button = screen.getByLabelText('Switch to dark theme');
+		const button = screen.getByLabelText('切换至暗色主题');
 		await button.click();
 		expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
 		expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
-		await expect.element(screen.getByLabelText('Switch to light theme')).toBeInTheDocument();
+		await expect.element(screen.getByLabelText('切换至明亮主题')).toBeInTheDocument();
 	});
 
 	it('toggles back to light on a second click', async () => {
 		const screen = await render(ThemeSwitch);
-		await screen.getByLabelText('Switch to dark theme').click();
-		await screen.getByLabelText('Switch to light theme').click();
+		await screen.getByLabelText('切换至暗色主题').click();
+		await screen.getByLabelText('切换至明亮主题').click();
 		expect(document.documentElement.getAttribute('data-theme')).toBe('light');
 		expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
 	});
@@ -46,10 +48,10 @@ describe('ThemeSwitch', () => {
 		});
 		try {
 			const screen = await render(ThemeSwitch);
-			await screen.getByLabelText('Switch to dark theme').click();
+			await screen.getByLabelText('切换至暗色主题').click();
 			expect(setItem).toHaveBeenCalledWith(STORAGE_KEY, 'dark');
 			expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-			await expect.element(screen.getByLabelText('Switch to light theme')).toBeInTheDocument();
+			await expect.element(screen.getByLabelText('切换至明亮主题')).toBeInTheDocument();
 		} finally {
 			setItem.mockRestore();
 		}
