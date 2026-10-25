@@ -35,6 +35,16 @@
 >
 	<p class="c-chapter__lede">{t.yinyang.lede}</p>
 
+	<div class="c-stack-grid">
+		{#each t.yinyang.steps as step (step.num)}
+			<div class="c-stack-grid__item">
+				<span class="c-stack-grid__num">{step.num}</span>
+				<h3 class="c-stack-grid__title">{step.title}</h3>
+				<p class="c-stack-grid__body">{step.body}</p>
+			</div>
+		{/each}
+	</div>
+
 	{#snippet cta()}
 		<div class="c-chapter__actions">
 			<ArtifactCta
@@ -52,24 +62,3 @@
 		</div>
 	{/snippet}
 </Chapter>
-
-<style>
-	.c-chapter__actions {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: var(--spacing-6);
-	}
-
-	.c-chapter__more-link {
-		font-family: var(--font-body);
-		font-size: var(--type-small);
-		color: var(--text-secondary);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-	}
-
-	.c-chapter__more-link:hover {
-		color: var(--accent);
-	}
-</style>

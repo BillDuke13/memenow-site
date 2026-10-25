@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { reveal } from '$lib/utils/motion';
 	import type { SceneImage } from '$lib/types';
 
@@ -9,6 +10,7 @@
 		lede,
 		cue,
 		image,
+		cta,
 		id = 'editorial-hero'
 	}: {
 		eyebrowLeft: string;
@@ -17,6 +19,7 @@
 		lede: string;
 		cue: string;
 		image?: SceneImage;
+		cta?: Snippet;
 		/** DOM id base; the section becomes `${id}` and the title `${id}-title`. */
 		id?: string;
 	} = $props();
@@ -64,6 +67,11 @@
 			{title}
 		</h1>
 		<p class="c-editorial-hero__lede reveal-fade" use:reveal>{lede}</p>
+		{#if cta}
+			<div class="c-editorial-hero__cta reveal-fade" use:reveal>
+				{@render cta()}
+			</div>
+		{/if}
 		<span class="c-editorial-hero__cue reveal-fade" use:reveal>{cue}</span>
 	</div>
 </section>

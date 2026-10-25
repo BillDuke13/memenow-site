@@ -25,21 +25,24 @@
 	title={t.hero.title}
 	lede={t.hero.lede}
 	cue={t.hero.cue}
-/>
-
-<Chapter
-	id="studio"
-	number={t.studio.number}
-	label={t.studio.label}
-	headless
-	title={t.studio.title}
 >
-	<p class="c-chapter__lede">{t.studio.lede}</p>
-	<p class="c-chapter__prose">{t.studio.p1}</p>
-	<p class="c-chapter__prose">{t.studio.p2}</p>
-</Chapter>
-
-<Pullquote quote={t.pullquote.quote} attribution={t.pullquote.attribution} />
+	{#snippet cta()}
+		<div class="c-chapter__actions">
+			<ArtifactCta
+				href="https://yinyang.memenow.xyz"
+				palette="celestial"
+				size="lg"
+				rel="noopener noreferrer"
+				target="_blank"
+			>
+				{t.hero.primaryCta}
+			</ArtifactCta>
+			<a class="c-chapter__more-link" href={`/${locale()}/products/yinyang`}>
+				{t.hero.secondaryCta} →
+			</a>
+		</div>
+	{/snippet}
+</EditorialHero>
 
 <Chapter
 	id="yinyang"
@@ -52,17 +55,46 @@
 	<p class="c-chapter__prose">{t.yinyang.p1}</p>
 	<p class="c-chapter__prose">{t.yinyang.p2}</p>
 
+	<div class="c-stack-grid">
+		{#each t.yinyang.pillars as pillar (pillar.num)}
+			<div class="c-stack-grid__item">
+				<span class="c-stack-grid__num">{pillar.num}</span>
+				<h3 class="c-stack-grid__title">{pillar.title}</h3>
+				<p class="c-stack-grid__body">{pillar.body}</p>
+			</div>
+		{/each}
+	</div>
+
 	{#snippet cta()}
-		<ArtifactCta
-			href="https://yinyang.memenow.xyz"
-			palette="celestial"
-			size="lg"
-			rel="noopener noreferrer"
-			target="_blank"
-		>
-			{t.yinyang.cta}
-		</ArtifactCta>
+		<div class="c-chapter__actions">
+			<ArtifactCta
+				href="https://yinyang.memenow.xyz"
+				palette="celestial"
+				size="lg"
+				rel="noopener noreferrer"
+				target="_blank"
+			>
+				{t.yinyang.cta}
+			</ArtifactCta>
+			<a class="c-chapter__more-link" href={`/${locale()}/products/yinyang`}>
+				{t.yinyang.detailLink} →
+			</a>
+		</div>
 	{/snippet}
+</Chapter>
+
+<Pullquote quote={t.pullquote.quote} attribution={t.pullquote.attribution} />
+
+<Chapter
+	id="studio"
+	number={t.studio.number}
+	label={t.studio.label}
+	align="left"
+	title={t.studio.title}
+>
+	<p class="c-chapter__lede">{t.studio.lede}</p>
+	<p class="c-chapter__prose">{t.studio.p1}</p>
+	<p class="c-chapter__prose">{t.studio.p2}</p>
 </Chapter>
 
 <Chapter

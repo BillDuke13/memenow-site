@@ -5,10 +5,10 @@
  * fails typechecking. No `as const`: literal widening to `string` is what
  * makes the two locales mutually assignable.
  *
- * Style contract (agreed with the site owner): grounded in actual shipped
- * capabilities, free of translationese and AI marketing cliches; the brand
- * is never translated; "Yinyang Agent" stays as-is; Timing Cycles is 时机周期
- * and Companion is 伴读对话 (glossed on first mention where helpful).
+ * Style contract: crafted for C-end users seeking personal insight, life
+ * rhythm, and calm clarity at everyday crossroads. Grounded in actual shipped
+ * capabilities, free of translationese, B2B/engineering jargon, and AI hype;
+ * the brand is never translated; "Yinyang Agent" stays as-is.
  * Legal strings contain intentional inline markup and are consumed via
  * `TrustedHtml` — they are trusted, static, and authored here, never user input.
  */
@@ -22,7 +22,7 @@ const zh = {
 		brand: 'memenow',
 		home: '首页',
 		products: '产品',
-		company: '公司',
+		company: '关于',
 		legal: '条款',
 		privacy: '隐私政策',
 		terms: '使用条款',
@@ -45,48 +45,73 @@ const zh = {
 	},
 	home: {
 		meta: {
-			title: 'memenow — 让 AI 成为你的伙伴。',
+			title: 'memenow — 见天地节律，明当下心意',
 			description:
-				'memenow 是一家打造可核查、可回访的 AI 的工作室。首款公开发布的作品是 Yinyang Agent：一份推理有据、可随时重读并继续追问的八字解读。',
-			ogTitle: 'memenow — 让 AI 成为你的伙伴。',
+				'memenow 是一家专注个人洞察与生活节律的 AI 工作室。首款作品 Yinyang Agent 将传统四柱八字化作温润平实的现代长文，陪你读懂自身底色，把握日周月年的时机节奏。',
+			ogTitle: 'memenow — 见天地节律，明当下心意',
 			ogDescription:
-				'一家注册于特拉华州刘易斯的工作室，打造推演可查、随时可回访的 AI。首款作品是 Yinyang Agent。'
+				'专注个人洞察与生活节律的 AI 工作室。首款作品 Yinyang Agent：一份随时可重读、可追问的四柱八字与时机解读。'
 		},
 		hero: {
-			eyebrowLeft: '工作室 · 特拉华州刘易斯',
-			eyebrowRight: '始于 2024',
-			title: '让 AI 成为你的伙伴。',
-			lede: '真正的伙伴会把推演过程摊开给你看，也会在你几个月后带着新问题回来时，接得上之前的话。我们的首款作品是 Yinyang Agent：一份把四柱八字写成平实长文、能随时重读并继续追问的解读。',
-			cue: '向下阅读 · 01 工作室'
-		},
-		studio: {
-			number: '01',
-			label: '工作室',
-			title: '我们打造自己愿意留存的 AI。',
-			lede: '分量克制，让人看得懂全貌；推演透明，每一步都有据可查；不赶工期，把事情做扎实。',
-			p1: '我们在 2024 年创立 memenow。彼时行业里最热闹的 AI 公司都在比拼声量和速度，却很少有人耐心把一件具体的事做透。我们想走另一条路：做一家安静的工作室，不追逐包罗万象的噱头，只做推理过程经得起审视、结论经得起时间检验的作品。',
-			p2: '首款公开发布的作品 Yinyang Agent 就按这个标准打造。未来我们还会推出新的作品，但每一件都必须先跨过同一道门槛：在第一次打开的一个月后、一年后，依然对你有价值。'
-		},
-		pullquote: {
-			quote: '好的伙伴会把推演摆在明处，并在你回来时依然在场。',
-			attribution: 'memenow 工作室准则'
+			eyebrowLeft: 'MEMENOW · 个人洞察与生活节律',
+			eyebrowRight: '旗舰作品 · YINYANG AGENT',
+			title: '见天地节律，明当下心意',
+			lede: '站在人生的岔路口，你需要的不是一句模棱两可的宿命断言，而是一面澄明、有据的镜子。我们的首款作品 Yinyang Agent 将传统四柱八字化作温润平实的现代长文，陪你读懂自身底色，在时间的起伏中从容落子。',
+			primaryCta: '免费体验 Yinyang Agent',
+			secondaryCta: '了解产品详情',
+			cue: '向下阅读 · 01 旗舰作品'
 		},
 		yinyang: {
-			number: '02',
+			number: '01',
 			label: 'Yinyang Agent',
-			title: '一份可以反复重读的八字解读。',
-			lede: '根据出生日期、时间与出生地时区，生成一篇四柱八字长文。像一位愿意把话讲透的老师，有理有据，不用查术语表就能读懂，并长久保存在你的账户里。',
-			p1: 'Yinyang Agent 按真太阳节气排定四柱，融合子平的五行旺衰平衡与盲派的全局势能推演，将日主、格局、过往年份印证以及感情、事业、健康、家庭的脉络写成一篇连贯的叙事，无需你先破译满屏符号。',
-			p2: '本命解读定下长期的底色，时机周期（Timing Cycles）则按日、周、月、年为你标注当下的顺势与谨慎窗口。当生活遇到新选择时，你还可以带着问题回到报告里继续对话，让每一次回访都有上下文可依。',
-			cta: '打开 Yinyang Agent'
+			title: '一份值得在人生不同阶段反复展卷的自我解读',
+			lede: '从出生日期、时间与出生地时区开始，无需事先懂得任何命理术语。像一位通透而耐心的长者，把你的命盘脉络娓娓道来，并长久留存在你的私人空间里。',
+			p1: 'Yinyang Agent 依真太阳节气排定四柱，融汇子平的五行调候与盲派的全局势能，将你的日主脾性、过往关键年份的印证，以及事业、情感、健康、家庭的长期线索写成一篇连贯透彻的长文，告别满屏晦涩符号与吓唬人的断语。',
+			p2: '本命解读为你锚定长远的生命底色；而随着日子一天天向前，时机周期会结合你的命盘推演日、周、月、年的顺逆窗口，知己对话则让你在每一次犹豫不决时，都能带着具体处境回来继续深谈。',
+			pillars: [
+				{
+					num: '01 · 本命长卷',
+					title: '读懂与生俱来的底色',
+					body: '不必翻阅古籍或查术语表。以平实细腻的现代叙事，讲透你的性格张力、天赋潜能与过往岁月的真实印证。'
+				},
+				{
+					num: '02 · 四大生活切面',
+					title: '照见情感、事业、健康与家庭',
+					body: '不止于抽象的五行旺衰，而是落脚到你真正在意的日常课题——如何经营关系、何时蓄力突破、怎样安顿身心。'
+				},
+				{
+					num: '03 · 时机周期',
+					title: '把握日、周、月、年的进退',
+					body: '顺风时不盲目冒进，逆水时不自我内耗。结合你的命盘动态标注眼前的发力窗口与留白时刻。'
+				},
+				{
+					num: '04 · 知己对话',
+					title: '每一次迷茫，都有人接得住话',
+					body: '无需每次从头解释自己。无论是职场抉择还是深夜心事，随时带着新问题回来，围绕你的命盘继续推演。'
+				}
+			],
+			cta: '免费查看我的命盘',
+			detailLink: '深入了解 Yinyang Agent'
+		},
+		pullquote: {
+			quote: '看清潮汐的方向，不是为了听凭风浪，而是为了在掌舵时多一份笃定。',
+			attribution: 'memenow 产品理念'
+		},
+		studio: {
+			number: '02',
+			label: '工作室理念',
+			title: '做慢一点，只为打磨真正经得起时间检验的陪伴',
+			lede: '不造喧嚣的噱头，不用模棱两可的套话糊弄人，把每一件关乎内心的事做扎实。',
+			p1: '我们在 2024 年创立 memenow。当外界都在比拼谁的模型更吵、生成得更快时，我们更在意另一件事：当一个人带着真实的生活困惑走近 AI，他能不能得到一份既有推导依据、又有温度的回答？',
+			p2: '因此，我们选择做一家安静的工作室。首款作品 Yinyang Agent 为我们立下了标尺——衡量一件作品好不好，不是看打开的第一分钟有多炫目，而是看一个月后、一年后，当你遇到新的十字路口时，还会不会愿意打开它重读。'
 		},
 		contact: {
 			number: '03',
 			label: '联系',
-			title: '联系我们。',
-			lede: '媒体采访、合作接洽或认真的探讨，请致信 ',
+			title: '与我们交谈',
+			lede: '无论是产品体验反馈、合作交流，还是认真的探讨，欢迎致信 ',
 			ledeEnd: '。',
-			p1: '每一封来信都由团队成员亲自阅读和回复。我们未必能立刻回信，但写给你的每一句话都来自真人，没有自动回复模板。',
+			p1: '每一封来信都由团队成员亲自阅读与回复。我们或许无法秒回，但写给你的每一句话都来自屏幕另一端的真人，绝无敷衍的自动模板。',
 			cta: '致信 hello@memenow.xyz'
 		}
 	},
@@ -94,155 +119,230 @@ const zh = {
 		meta: {
 			title: '产品 — memenow',
 			description:
-				'memenow 已发布的作品。首款公开发布的产品是 Yinyang Agent：融汇子平与盲派推演、可随时重读与对话的八字解读。',
+				'memenow 旗下作品。首款产品 Yinyang Agent：从免费每日签与基础排盘，到子平盲派合参长卷、时机日历与知己对话。',
 			ogTitle: '产品 — memenow',
 			ogDescription:
-				'memenow 工作室首款公开发布的作品：Yinyang Agent，一份推理可查、结合时机周期与伴读对话的八字解读。'
+				'为自我探索与日常抉择而作。首款产品 Yinyang Agent：读懂生辰脉络，把握当下节奏。'
 		},
 		hero: {
-			eyebrowLeft: '产品',
-			eyebrowRight: '更新于 2026-10',
-			title: '我们交付的作品。',
-			lede: '我们按长久留存的标准打磨每一件作品。首款公开发布的产品是 Yinyang Agent，它也为工作室后续的作品立下了标尺。',
+			eyebrowLeft: 'MEMENOW · 产品系列',
+			eyebrowRight: '持续演进',
+			title: '为自我探索与日常抉择而作',
+			lede: '我们不堆砌浅尝辄止的工具，只打磨能长久陪伴你的作品。首款产品 Yinyang Agent 已全面开放——从零门槛的免费排盘与每日签开始，陪你走入深度的自我认知。',
 			cue: '向下阅读 · 01 Yinyang Agent'
 		},
 		yinyang: {
 			number: '01',
 			label: 'Yinyang Agent',
-			title: '看清命盘结构，把握当下节奏。',
-			lede: '以四柱八字探索出生时刻。从免费每日提示与基础排盘开始，深入子平与盲派合参的完整报告，并在日、周、月、年的时机周期与伴读对话中持续找到参考。',
-			cta: '打开 Yinyang Agent',
-			detailLink: '阅读产品详情'
+			title: '读懂生辰脉络，找到属于你的进退节奏',
+			lede: '以中国传统四柱八字为镜，照见性格底色与时间周期。无论你是第一次好奇排盘，还是正在为眼前的选择寻找参照，都能按自己的步调渐次深入。',
+			steps: [
+				{
+					num: '第一步 · 免费初识',
+					title: '基础排盘与每日签',
+					body: '输入出生日期、时间与出生地时区，即刻生成四柱命盘与核心五行解读，每天还可免费抽取结合时令的每日时机灵感。'
+				},
+				{
+					num: '第二步 · 深度识己',
+					title: '子平盲派合参完整长卷',
+					body: '解锁万字级深度报告：涵盖过往年份印证、十年大运与流年走势，以及感情、事业、健康、家庭四章贴合现实的行动参考与专属命盘画像卡。'
+				},
+				{
+					num: '第三步 · 日常长伴',
+					title: '时机日历与知己对话',
+					body: '在日常中随时查看日、周、月、年的顺势与谨慎窗口；遇到具体纠结时，直接在对话中围绕你的命盘继续提问与梳理。'
+				},
+				{
+					num: '第四步 · 随时求证',
+					title: '内置八字资料库与透明推演',
+					body: '每一处结论皆标注命理依据，配套通俗易懂的八字术语与流派资料库，让你不仅知其然，更看清背后的推演逻辑。'
+				}
+			],
+			cta: '免费体验 Yinyang Agent',
+			detailLink: '阅读完整产品介绍'
 		}
 	},
 	productYinyang: {
 		meta: {
-			title: 'Yinyang Agent — memenow',
-			description: 'Yinyang Agent：融合子平与盲派推演、时机周期与伴读对话的四柱八字解读。',
-			ogTitle: 'Yinyang Agent — memenow',
-			ogDescription: '四柱八字长篇解读，附完整推理链、日周月年时机周期与懂命盘的伴读对话。'
+			title: 'Yinyang Agent — 四柱八字与生活节律知己 · memenow',
+			description:
+				'Yinyang Agent：将古老的四柱八字写成照见当下的清澈长文。融合真太阳时排盘、子平盲派合参、日周月年时机周期与懂命盘的知己对话。',
+			ogTitle: 'Yinyang Agent — 读懂生辰脉络，走好当下每一步',
+			ogDescription:
+				'免费开启四柱八字基础排盘与每日签，深入子平盲派合参长卷、时机日历与随时相伴的知己对话。'
 		},
 		hero: {
-			eyebrowLeft: '产品 · Yinyang Agent',
-			eyebrowRight: '已上线',
-			title: '看清命盘地势，为选择留出空间。',
-			lede: '八字是一种帮助反思的文化框架，而非宿命的断言。我们将四柱排盘、子平与盲派推演、时机周期与伴读对话融为一体，陪你按自己的节奏读懂当下。',
-			cue: '向下阅读 · 01 解读与周期'
+			eyebrowLeft: '产品 · YINYANG AGENT',
+			eyebrowRight: '支持免费体验',
+			title: '把古老的四柱八字，写成照见当下的清澈长文',
+			lede: '八字不是用来替你下判决书的宿命论，而是一套历经千年的自我观察坐标系。Yinyang Agent 将严谨的天文节气排盘、子平盲派合参、时机周期与知己对话融为一体，陪你把复杂的当下理出头绪。',
+			primaryCta: '免费查看我的命盘',
+			cue: '向下阅读 · 01 体验与陪伴'
 		},
 		reading: {
 			number: '01',
-			label: '解读与周期',
-			title: '不止于第一次解读。',
-			lede: '从免费每日提示与每个自然月两次免费基础排盘开始。命盘与长文并排呈现：先看清日主、五行分布与核心信号，再按需深入完整章节。',
-			p1: '在完整报告中，系统基于出生地时区与真太阳节气排定四柱，将过往具体年份的印证、十年大运与流年脉络，以及感情、事业、健康、家庭四章行动建议悉数展开。每一步推演均标注置信度与命理依据，并配有八字资料库供你随时查证术语与流派，还可生成专属命盘画像卡。',
-			p2: '报告长久保存在你的账户中，不会因重新刷新而变样。随着时间推移，时机周期（Timing Cycles）会结合你的命盘推算日、周、月、年的顺势与谨慎窗口；你也可以在伴读对话（Companion）或事业、情感、健康频道中，带着眼前的具体决定随时回来继续提问。'
+			label: '体验与陪伴',
+			title: '从第一次惊艳的印证，到日常随时可依的参照',
+			lede: '你可以从免费每日签或每月两次免费基础排盘轻松开始。命盘结构与现代长文并排呈现：一眼看清日主特质与五行平衡，再按自己的节奏读入深处。',
+			p1: '当你解锁完整报告，系统会依出生地经纬时区与真太阳节气精准定盘，将过往具体年份的经历印证、十年大运与流年起伏，以及感情、事业、健康、家庭四章现世建议娓娓展开。你还可以随时翻阅内置的八字资料库，或生成一张值得珍藏与分享的专属命盘画像卡。',
+			p2: '你的每一份解读都会长久保存在账户中，成为稳定的个人参照系。随着生活流转，时机周期会结合你的命盘标出日、周、月、年的顺逆窗口；而在知己对话及事业、情感、健康专属频道里，你随时可以带着眼前的新决定回来聊聊。',
+			highlights: [
+				{
+					num: '01 · 零门槛上手',
+					title: '盘文对照，不掉书袋',
+					body: '把晦涩的天干地支、十神生克转化为贴近现代生活的清晰叙事，第一次接触八字也能轻松读懂。'
+				},
+				{
+					num: '02 · 过往印证',
+					title: '先验过往，再看未来',
+					body: '通过梳理你过去关键年份的转折与体感来校准命盘脉络，让未来的大运与流年参考建立在真实可感的基础上。'
+				},
+				{
+					num: '03 · 动态节律',
+					title: '日、周、月、年时机日历',
+					body: '将宏大的命盘落到具体的一天、一周与一月，帮你识别何时适合推进重要决定，何时宜收敛蓄力。'
+				},
+				{
+					num: '04 · 持续深谈',
+					title: '懂你上下文的知己对话',
+					body: '对话助手完整通读你已保存的命盘报告，围绕你的真实性格与当前大运，陪你拆解每一个具体纠结。'
+				}
+			]
 		},
 		pullquote: {
-			quote: '值得留存的解读，在送达你之前，都先经过一道全文核查。',
-			attribution: 'Yinyang Agent 的审校准则'
+			quote: '好的解读从不替你做决定，它只是替你拨开迷雾，让你听见自己内心的声音。',
+			attribution: 'Yinyang Agent 设计准则'
 		},
 		discipline: {
 			number: '02',
-			label: '推演与核查',
-			title: '为什么一份解读需要几分钟。',
-			lede: '仓促生成的套话只适合一划而过。要把八字写成一份经得起反复对照的参考，推演与核查都省不得时间。',
-			p1: '当你提交出生信息后，Yinyang Agent 会先按节气定盘，随后并行启动子平（权衡五行生克与调候）与盲派（推演全局势能与做功）两条推理轨，再熔铸为完整初稿。送达你之前，独立的审校环节会将初稿与排盘事实、年份边界逐条比对，剔除无据断言并完成定向修复。多花的这几分钟，是为了让你读到的每一段话都有迹可循。',
-			cta: '前往 yinyang.memenow.xyz'
+			label: '匠心与方法',
+			title: '为什么我们愿意花几分钟，为你细细打磨一份报告',
+			lede: '一秒钟弹出的算命套话，只适合一划而过。要把八字写成一份经得起岁月对照的人生长卷，推演与复核都省不得半点工夫。',
+			p1: '当你提交出生信息后，Yinyang Agent 首先根据出生地时区与天文节气完成定盘，随后同时从子平（权衡五行生克与寒暖调候）与盲派（推演全局势能与做功效率）两个古典视角切入推演。在成文送达你之前，系统还会将全文结论与排盘事实、年份边界逐一交叉印证，剔除空洞夸张的套话。多等待的这几分钟，换来的是字字有据的安心。',
+			comparison: {
+				caption: '为什么 Yinyang Agent 与快餐式 AI 算命截然不同',
+				genericLabel: '快餐式 AI 算命 / 通用聊天框',
+				yinyangLabel: 'Yinyang Agent',
+				rows: [
+					{
+						feature: '排盘基准',
+						generic: '常忽略出生地时区与节气交接，甚至连四柱干支都排错',
+						yinyang: '严格按出生地 IANA 时区与天文节气定盘，排盘事实确定不移'
+					},
+					{
+						feature: '推演深度',
+						generic: '单次提示词拼凑模棱两可的巴纳姆套话，千人一面',
+						yinyang: '子平五行旺衰与盲派全局做功双视角合参，兼顾格局与细节'
+					},
+					{
+						feature: '可信度检验',
+						generic: '张口就来，前后矛盾，换个问法结论就变',
+						yinyang: '结合过往年份印证，成文前经全文事实与年份边界交叉复核'
+					},
+					{
+						feature: '后续陪伴',
+						generic: '一次性网页快照，聊完即散，无法承接后续生活变化',
+						yinyang: '报告永久留存，联动日周月年时机周期与懂命盘的知己对话'
+					}
+				]
+			},
+			cta: '前往 yinyang.memenow.xyz 开启解读'
 		}
 	},
 	company: {
 		meta: {
-			title: '公司 — memenow',
+			title: '关于我们 — memenow',
 			description:
-				'memenow 是一家注册于特拉华州刘易斯的工作室，成立于 2024 年，打造可核查、可回访的 AI。',
-			ogTitle: '公司 — memenow',
-			ogDescription: '一家注册于特拉华州刘易斯的工作室。成立于 2024 年。打造可核查、可回访的 AI。'
+				'memenow 创立于 2024 年，是一支横跨美国与大中华区的独立 AI 工作室，致力于将东方人文哲思与严谨透明的 AI 结合，打造长久陪伴用户的作品。',
+			ogTitle: '关于我们 — memenow',
+			ogDescription:
+				'创立于 2024 年的独立 AI 工作室。连接东方人文哲思与现代工程匠心，打造值得长久重读的作品。'
 		},
 		hero: {
-			eyebrowLeft: '公司 · 特拉华州刘易斯',
+			eyebrowLeft: '关于 · MEMENOW 工作室',
 			eyebrowRight: '始于 2024',
-			title: '一家小工作室。',
-			lede: '2024 年成立于特拉华州刘易斯。我们打造可核查、可回访的 AI；我们慢慢交付，因为这些作品应当持久。',
-			cue: '向下阅读 · 01 工作室'
+			title: '一家安静打磨作品的独立工作室',
+			lede: '2024 年创立。我们横跨太平洋两岸，把东方传统哲思与可溯源的现代 AI 融为一体，慢工出细活，只做经得起时间检验的个人陪伴作品。',
+			cue: '向下阅读 · 01 我们的团队'
 		},
 		studio: {
 			number: '01',
-			label: '工作室',
-			title: '我们在哪里。',
-			lede: '2024 年成立于特拉华州刘易斯。一支分布在美国与大中华区的小型团队。',
-			p1: '刘易斯是公司文书注册的地方。团队成员分布在美国与大中华区的不同时区，大家都不喜欢高调喧哗，更愿意安安静静把东西做好，是这一点把我们聚在了一起。',
+			label: '我们的团队',
+			title: '跨越时区，因同一份审美与克制而聚',
+			lede: '公司创立于美国特拉华州，团队成员分布在美国与大中华区的不同城市。',
+			p1: '我们之中既有深耕人工智能与分布式系统的工程师，也有长期研习东方传统文化的创作者。大家都不喜欢喧哗浮夸的营销，更愿意沉下心来，把复杂的技术化作温润、体贴、让人安心的日常体验——正是这份默契把我们聚在了一起。',
 			stats: {
 				foundedYear: '2024',
-				foundedLabel: '成立',
-				foundedDesc: '注册于特拉华州刘易斯。',
+				foundedLabel: '工作室创立',
+				foundedDesc: '确立“真诚有据、长久陪伴”的产品理念。',
 				productCount: '1',
 				productLabel: '旗舰作品',
-				productDesc: 'Yinyang Agent：可核查、可回访的四柱八字解读。',
+				productDesc: 'Yinyang Agent：四柱八字长卷、时机周期与知己对话。',
 				teamRegion: 'US · CN',
-				teamLabel: '分布式团队',
-				teamDesc: '一支跨美国与大中华区的小团队。'
+				teamLabel: '跨文化团队',
+				teamDesc: '连接现代 AI 工程严谨度与东方人文洞察。'
 			}
 		},
 		work: {
 			number: '02',
-			label: '工作方式',
-			title: '我们如何工作。',
-			lede: '选一个值得认真对待的问题，用克制、可核查、经得起时间检验的方式把它答好。',
-			p1: '我们只做 AI 真能成为长期伙伴的事：它给出的内容值得你留存、重读，并在生活变化时带着新问题回来对照。Yinyang Agent 就是这样一个起点。我们衡量每件作品的标准很简单，不是看打开的第一分钟有多惊艳，而是看一个月后你还会不会回来用它。',
-			p2: '遇到不知道的，我们就说不知道。模型不好用了，我们就停用它。需要更长时间，我们就延长排期。这些都不崇高——只是让作品值得信任的纪律。',
+			label: '行事准则',
+			title: '我们如何打磨产品',
+			lede: '选一个真正关乎人心的问题，用克制、透明、不赶工期的方式把它答好。',
+			p1: '我们只做 AI 真能成为长期知己的事：它给出的内容值得你珍藏、重读，并在生活翻开新篇章时带着问题回来对照。Yinyang Agent 就是我们交出的第一份答卷。我们从不用刺眼的弹窗或制造焦虑的话术逼人付费，因为真正好的体验自然会让人愿意留下来。',
+			p2: '有把握的推演，我们把依据摊开讲清；超出认知边界的，我们坦诚留白。模型表现不够稳，我们就反复打磨直到过关。这些原则并不高深，只是为了让屏幕前的你感到踏实与受尊重。',
 			timeline: [
 				{
 					year: '2024',
-					title: '工作室成立',
-					body: 'memenow 在特拉华州刘易斯注册。先确立可核查、可回访的产品准则，再写下第一行代码。'
+					title: 'memenow 创立',
+					body: '在写下第一行代码之前，先定下“不贩卖焦虑、不做一次性快餐玩具”的工作室准则。'
 				},
 				{
 					year: '2024–2026',
-					title: 'Yinyang Agent',
-					body: '首款作品上线并持续演进：融合子平与盲派双轨推演、全文证据核查、日周月年时机周期（Timing Cycles）与伴读对话（Companion）。'
+					title: 'Yinyang Agent 上线与演进',
+					body: '首款旗舰作品正式发布并持续迭代：完成真太阳时排盘、子平与盲派双视角合参、全文事实复核、日周月年时机周期与知己对话体验。'
 				}
 			]
 		},
 		contact: {
 			number: '03',
 			label: '联系',
-			title: '取得联系。',
-			lede: '媒体采访、合作接洽或认真的探讨，请致信 ',
+			title: '期待听见你的声音',
+			lede: '媒体采访、商务合作或产品心得交流，欢迎致信 ',
 			ledeEnd: '。',
-			p1: '每一封来信都由我们亲自阅读和回复，没有自动应答，也不发模板信件。',
+			p1: '每一封邮件都由我们亲自阅读并手写回复，没有冰冷的工单号，也没有千篇一律的自动应答。',
 			cta: '致信 hello@memenow.xyz'
 		}
 	},
 	privacy: {
 		meta: {
 			title: '隐私政策 — memenow',
-			description: 'memenow.xyz 隐私声明。'
+			description: 'memenow.xyz 隐私保护声明。'
 		},
 		hero: {
-			eyebrowLeft: '法律 · 隐私',
+			eyebrowLeft: '法律 · 隐私政策',
 			eyebrowRight: '更新于 2026-10-15',
-			title: '我们收集什么，不收集什么。',
-			lede: 'memenow.xyz 在本站几乎不收集任何信息。以下说明到底收集了什么，以及什么只留在你的浏览器里。',
+			title: '你的隐私，清晰透明',
+			lede: 'memenow.xyz 官网几乎不收集任何个人信息。以下用最直白的话说明哪些偏好只留在你的设备里，哪些基础日志仅用于安全运维。',
 			cue: '向下阅读 · 隐私声明'
 		},
 		scope: {
 			number: '01',
 			label: '适用范围',
-			title: '本声明涵盖什么。',
-			body: '适用于 <strong>memenow.xyz</strong> 的公开页面。具体产品可能在其各自页面上有单独的隐私声明。'
+			title: '本声明涵盖的范围',
+			body: '本声明适用于 <strong>memenow.xyz</strong> 官方网站的公开页面。旗下具体产品（如 Yinyang Agent）在其各自应用界面内设有专门的隐私政策与数据管理选项。'
 		},
 		data: {
 			number: '02',
-			label: '数据',
-			title: '我们收集什么。',
-			p1: '本站不使用第三方分析，也不投放广告。你的主题与动效偏好（浏览器本地键 <code class="prose-code">memenow.theme</code> 与 <code class="prose-code">memenow.motion</code>）只保存在浏览器中，不会发送给我们；语言偏好（<code class="prose-code">memenow.locale</code>）以 cookie 保存并随请求发送，仅用于以你选择的语言呈现页面。',
-			p2: 'Cloudflare 会记录标准的请求元数据（IP、User-Agent、时间戳、路径）用于运维与安全。我们不会把它与任何身份关联。'
+			label: '数据说明',
+			title: '我们收集什么，不收集什么',
+			p1: '本站不接入任何第三方追踪分析脚本，也不投放任何广告。你的明暗主题与动效偏好（浏览器本地存储键 <code class="prose-code">memenow.theme</code> 与 <code class="prose-code">memenow.motion</code>）完全保留在你的本地浏览器中，从不上传；语言偏好（<code class="prose-code">memenow.locale</code>）以第一方 Cookie 保存，仅用于按你选择的语言呈现页面。',
+			p2: '托管基础设施 Cloudflare 会按行业惯例记录基础请求元数据（IP 地址、User-Agent、时间戳与访问路径）以保障站点安全与稳定运行。我们从不将这些日志与任何个人身份相关联。'
 		},
 		email: {
 			number: '03',
-			label: '邮件',
-			title: '邮件与联系。',
-			body: '致信 <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a> 的邮件仅用于回复沟通，我们不会与任何第三方分享。'
+			label: '邮件沟通',
+			title: '来信与联系方式',
+			body: '当你致信 <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a> 时，你的邮件内容与地址仅用于我们向你回信沟通，绝不会出售或分享给任何第三方。'
 		}
 	},
 	terms: {
@@ -251,64 +351,65 @@ const zh = {
 			description: 'memenow.xyz 使用条款。'
 		},
 		hero: {
-			eyebrowLeft: '法律 · 条款',
+			eyebrowLeft: '法律 · 使用条款',
 			eyebrowRight: '更新于 2026-10-15',
-			title: '简明的条款。',
-			lede: '我们发布 memenow.xyz 所依据的条件。',
+			title: '简明平实的使用条款',
+			lede: '欢迎访问 memenow.xyz。以下条款清晰说明了本站的服务边界、文化探索属性与你的合法权益。',
 			cue: '向下阅读 · 使用条款'
 		},
 		scope: {
 			number: '01',
 			label: '适用范围',
-			title: '本条款涵盖什么。',
-			body: '适用于 <strong>memenow.xyz</strong> 的公开页面。访问或使用本站，即表示你知悉并同意本条款。具体产品（如 Yinyang Agent）可能在其各自页面上另有条款。'
+			title: '本条款涵盖的范围',
+			body: '本条款适用于 <strong>memenow.xyz</strong> 的所有公开页面。访问或使用本站即表示你已阅读并同意本条款。具体产品（如 Yinyang Agent）在其各自服务页面内提供独立的产品服务条款。'
 		},
 		disclaimer: {
 			number: '02',
 			label: '文化与 AI 免责',
-			title: '文化探究属性与 AI 生成内容。',
-			p1: 'memenow 旗下产品（包括 Yinyang Agent）提供的八字、四柱与五行内容源自中国传统哲学与文化遗产，仅供人文反思与自我探索之用，<strong>不构成、也不能替代专业的医疗、心理、法律或财务建议</strong>。',
-			p2: '上述内容由人工智能模型生成，本质上属于叙事性演绎；我们不对其绝对准确性或任何预见性结果作出明示或暗示的承诺。你基于这些内容作出的任何决定，由你独立判断并自行承担责任。'
+			title: '文化探索属性与 AI 生成说明',
+			p1: 'memenow 旗下产品（包括 Yinyang Agent）所呈现的四柱八字与五行内容源自中国传统哲学与人文遗产，旨在为自我觉察与日常反思提供文化视角，<strong>不构成、亦不能替代专业的医疗、心理咨询、法律或财务投资建议</strong>。',
+			p2: '相关解读由人工智能模型辅助生成，本质上属于叙事性阐释；我们不对任何未来的确定性结果作出明示或暗示的承诺。命盘只是起点，生活中的每一项具体决定始终由你独立判断并自主负责。'
 		},
 		warranty: {
 			number: '03',
-			label: '不作保证',
-			title: '按「原样」提供。',
-			body: '本站按「原样」提供。我们努力保持内容准确与服务在线，但不对其适用性、完整性或时效性作出任何保证。'
+			label: '服务状态',
+			title: '按原样提供服务',
+			body: '本站内容按「原样」提供。我们持续致力于保持信息准确与站点稳定在线，但不对其特定用途适用性、绝对完整性或实时性作出额外担保。'
 		},
 		offer: {
 			number: '04',
-			label: '非要约',
-			title: '本站内容不构成金融要约。',
-			body: '本站的任何内容均不构成出售任何证券、基金份额或金融工具的要约，也不构成购买邀约或相关建议。'
+			label: '非金融要约',
+			title: '不构成任何金融或投资要约',
+			body: '本站的任何文字或内容均不构成出售任何证券、基金份额或金融工具的要约，亦不构成任何投资邀约或财务建议。'
 		},
 		ip: {
 			number: '05',
 			label: '知识产权',
-			title: '商标、版权与你的个人解读。',
-			p1: '「memenow」名称与标志是 memenow 的商标；其他商标归其各自所有者。本站文字与设计 © memenow。',
-			p2: '你在 Yinyang Agent 等产品中生成的个人解读，享有永久阅读、个人留存与非商业性分享的权利。'
+			title: '品牌标识与你的个人解读权益',
+			p1: '「memenow」名称、图形标志及站点视觉设计均属 memenow 所有；提及的其他商标归各自权利人所有。',
+			p2: '你在 Yinyang Agent 等产品中生成的个人命盘解读，始终归你永久阅读、私人珍藏与非商业性分享。'
 		},
 		law: {
 			number: '06',
 			label: '准据法律',
-			title: '美国特拉华州。',
-			p1: '本条款受特拉华州法律管辖，不考虑冲突法规则。',
-			p2: '我们可能更新本条款；页首的「更新于」日期反映最近一次修订。如有疑问：<a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a>。'
+			title: '适用法律与修订说明',
+			p1: '本条款受美国特拉华州法律管辖并据其解释（不含冲突法规则）。',
+			p2: '我们可能随业务发展适时更新本条款，页首的「更新于」日期始终反映最近一次修订时间。如有任何疑问，欢迎致信 <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a>。'
 		}
 	},
 	error: {
 		meta: {
 			title: '{status} · memenow'
 		},
-		notFoundTitle: '此路不通。',
-		serverErrorTitle: '信号中断。',
-		notFoundLede: '你找的页面可能已经移动、改名，或从未存在过。',
-		serverErrorLede: '我们这边出了问题。请稍后再试。',
+		notFoundTitle: '这一页隐入雾中了',
+		serverErrorTitle: '连接暂时起了点波澜',
+		notFoundLede:
+			'你寻找的页面可能已经移步他处、更改了名称，或从未在此停留。不妨回到首页重新出发。',
+		serverErrorLede: '服务暂时有些繁忙，请稍候片刻再试一次。',
 		returnHome: '返回首页',
 		statusLabel: '状态 · {status}',
-		notFoundLabel: '未找到',
-		errorLabel: '错误',
+		notFoundLabel: '页面未找到',
+		errorLabel: '服务异常',
 		cueHome: '返回 · 首页'
 	}
 };
@@ -318,7 +419,7 @@ const en = {
 		brand: 'memenow',
 		home: 'Home',
 		products: 'Products',
-		company: 'Company',
+		company: 'About',
 		legal: 'Legal',
 		privacy: 'Privacy',
 		terms: 'Terms',
@@ -341,48 +442,74 @@ const en = {
 	},
 	home: {
 		meta: {
-			title: 'memenow — Make AI your partner.',
+			title: 'memenow — Know your rhythm. Choose with clarity.',
 			description:
-				'memenow is a studio building AI you can audit and return to. Our first public release is Yinyang Agent: a sourced BaZi reading you can revisit, question, and follow across time.',
-			ogTitle: 'memenow — Make AI your partner.',
+				'memenow is an independent AI studio crafting thoughtful tools for self-reflection and life timing. Our flagship product, Yinyang Agent, turns classical Four Pillars BaZi into warm, grounded prose you can revisit across every season of life.',
+			ogTitle: 'memenow — Know your rhythm. Choose with clarity.',
 			ogDescription:
-				'A studio incorporated in Lewes, Delaware, building AI that shows its reasoning and stays useful when you return. First release: Yinyang Agent.'
+				'An independent AI studio for personal insight and life rhythm. First release: Yinyang Agent — Four Pillars BaZi readings, Timing Cycles, and Companion dialogue.'
 		},
 		hero: {
-			eyebrowLeft: 'Studio · Lewes, Delaware',
-			eyebrowRight: 'Est. 2024',
-			title: 'Make AI your partner.',
-			lede: 'A real partner shows how it reached its conclusions and keeps the thread when you return months later with a new question. Our first release is Yinyang Agent: a long-form BaZi reading written in plain prose, saved to revisit and converse with over time.',
-			cue: 'Scroll · 01 The studio'
-		},
-		studio: {
-			number: '01',
-			label: 'The studio',
-			title: "We build the AI we'd want to keep.",
-			lede: 'Scope small enough to hold in mind, methods open enough to verify, timelines patient enough to get right.',
-			p1: 'We founded memenow in 2024 because the loudest AI companies kept scaling ambition while shipping away patience. We wanted the opposite: a quiet studio that trades sweeping claims for transparent reasoning and work that holds up over time.',
-			p2: 'Our first public release, Yinyang Agent, is built to that standard. Every product that follows will have to earn its place the same way: still useful a month—and a year—after the first click.'
-		},
-		pullquote: {
-			quote: 'A true partner puts its reasoning in the open, and is still there when you return.',
-			attribution: 'memenow studio principle'
+			eyebrowLeft: 'MEMENOW · PERSONAL INSIGHT STUDIO',
+			eyebrowRight: 'FLAGSHIP · YINYANG AGENT',
+			title: 'Know your rhythm. Choose with clarity.',
+			lede: 'At life’s crossroads, you don’t need vague fortune-telling clichés—you need a calm, honest mirror. Our flagship release, Yinyang Agent, translates the classical Four Pillars of BaZi into warm, readable prose that helps you understand your nature and navigate changing seasons.',
+			primaryCta: 'Try Yinyang Agent Free',
+			secondaryCta: 'Explore the product',
+			cue: 'Scroll · 01 Flagship product'
 		},
 		yinyang: {
-			number: '02',
+			number: '01',
 			label: 'Yinyang Agent',
-			title: 'A BaZi reading you can return to.',
-			lede: 'Begin with your birth date, time, and birth timezone; receive a long-form Four Pillars reading. Written in plain prose, grounded in classical reasoning, and saved to your account for good.',
-			p1: 'Yinyang Agent charts your Four Pillars against astronomical solar terms, then synthesizes ZiPing elemental balance with MangPai structural flow. Day Master, chart pattern, past-year validations, and guidance across love, career, health, and family are written as clear narrative rather than a wall of symbols.',
-			p2: 'Your natal report anchors the long arc, while Timing Cycles maps favorable and caution windows across days, weeks, months, and years. Whenever a new decision arises, you can return to Companion to ask follow-up questions grounded in your saved chart.',
-			cta: 'Open Yinyang Agent'
+			title: 'A personal reading written to live with you',
+			lede: 'Begin with your birth date, time, and birth timezone—no astrology background required. Receive a deeply reasoned Four Pillars portrait written in clear modern prose and saved to your private account for good.',
+			p1: 'Yinyang Agent calibrates your birth chart against astronomical solar terms, blending ZiPing elemental balance with MangPai structural flow. Instead of dumping a wall of esoteric symbols, it weaves your Day Master, past-year milestones, and guidance for love, career, health, and family into a single cohesive narrative.',
+			p2: 'Your natal reading anchors the long arc of who you are. As life unfolds, Timing Cycles maps favorable and caution windows across days, weeks, months, and years—and Companion dialogue lets you return anytime with a real decision on your mind.',
+			pillars: [
+				{
+					num: '01 · Natal Portrait',
+					title: 'Understand your innate wiring',
+					body: 'No glossary needed. Read a nuanced, plain-language narrative of your core temperament, natural strengths, and how past pivotal years played out.'
+				},
+				{
+					num: '02 · Four Life Domains',
+					title: 'Clarity across love, career, health & family',
+					body: 'Move beyond abstract elemental scores into practical reflection for the relationships, ambitions, and daily habits that shape your life.'
+				},
+				{
+					num: '03 · Timing Cycles',
+					title: 'Move in sync with days, weeks, months & years',
+					body: 'Know when to lean in and when to rest. See how current temporal cycles interact with your natal chart so you can pace your next move.'
+				},
+				{
+					num: '04 · Companion Dialogue',
+					title: 'A conversation that remembers who you are',
+					body: 'Never start from scratch. Come back whenever a new question or crossroads arises and talk it through with a companion grounded in your chart.'
+				}
+			],
+			cta: 'Read My Chart Free',
+			detailLink: 'See how Yinyang Agent works'
+		},
+		pullquote: {
+			quote:
+				'Reading the tide isn’t about surrendering to the waves—it’s about holding the helm with calm conviction.',
+			attribution: 'memenow studio ethos'
+		},
+		studio: {
+			number: '02',
+			label: 'Our Philosophy',
+			title: 'Quiet craft for questions that stay with you',
+			lede: 'No hype, no hollow horoscopes, and no rushed shortcuts—just thoughtful work built to hold up over time.',
+			p1: 'We founded memenow in 2024 with a simple observation: while most of the AI world raced to build louder, faster chatbots, very few were building spaces for quiet self-understanding. When someone brings a genuine life question to AI, they deserve transparent reasoning and human warmth.',
+			p2: 'That is why we work like a small craft studio. Yinyang Agent sets the standard for everything we build: we don’t measure success by a flashy first thirty seconds, but by whether you still find comfort and clarity when you return a month—or a year—later.'
 		},
 		contact: {
 			number: '03',
 			label: 'Contact',
-			title: 'Get in touch.',
-			lede: 'For press, partnerships, or thoughtful questions, write to ',
+			title: 'Start a conversation',
+			lede: 'For product thoughts, press inquiries, or meaningful partnerships, write to ',
 			ledeEnd: '.',
-			p1: 'We read every message and reply in person. We may not answer right away, but you will always hear back from a human, never an auto-responder.',
+			p1: 'Every note is read and answered personally by a member of our team. We may take a little time to reply thoughtfully, but you will always hear back from a real person—never an automated template.',
 			cta: 'Email hello@memenow.xyz'
 		}
 	},
@@ -390,225 +517,299 @@ const en = {
 		meta: {
 			title: 'Products — memenow',
 			description:
-				'Products from memenow. Our first public release is Yinyang Agent: a BaZi reading grounded in dual-school reasoning, Timing Cycles, and chart-aware dialogue.',
+				'Works crafted by memenow. Start with our flagship release, Yinyang Agent: free daily prompts and base BaZi charting, full dual-school synthesis, Timing Cycles, and Companion dialogue.',
 			ogTitle: 'Products — memenow',
 			ogDescription:
-				'Our first public release: Yinyang Agent, an auditable BaZi reading built to revisit across changing cycles.'
+				'Crafted for self-reflection and everyday choices. Explore Yinyang Agent: Four Pillars BaZi readings, Timing Cycles, and chart-aware dialogue.'
 		},
 		hero: {
-			eyebrowLeft: 'Products',
-			eyebrowRight: 'Updated 2026-10',
-			title: "What we've shipped.",
-			lede: 'We ship slowly and build to keep. Our first public release is Yinyang Agent—setting the bar that every subsequent work from the studio will share.',
+			eyebrowLeft: 'MEMENOW · PRODUCTS',
+			eyebrowRight: 'LIVE NOW',
+			title: 'Crafted for reflection and everyday choices',
+			lede: 'We don’t build disposable novelty tools. We craft calm, enduring companions for self-discovery. Our flagship product, Yinyang Agent, is live—starting with free charting and daily insights.',
 			cue: 'Scroll · 01 Yinyang Agent'
 		},
 		yinyang: {
 			number: '01',
 			label: 'Yinyang Agent',
-			title: 'See the structure. Find your rhythm.',
-			lede: 'Explore your birth moment through the Four Pillars of BaZi. Start with free daily prompts and a base chart reading, unlock full dual-school synthesis, and return anytime through Timing Cycles and Companion dialogue.',
-			cta: 'Open Yinyang Agent',
-			detailLink: 'Read the product page'
+			title: 'Understand your pattern. Move at your own pace.',
+			lede: 'Explore your birth moment through the Four Pillars of BaZi. Whether you are curious about your elemental balance for the first time or weighing a major life transition, you can explore step by step.',
+			steps: [
+				{
+					num: 'Step 01 · Free Start',
+					title: 'Base Chart & Daily Prompt',
+					body: 'Enter your birth date, time, and birth timezone to see your Four Pillars, Five Elements balance, and free daily timing reflections right away.'
+				},
+				{
+					num: 'Step 02 · Deep Portrait',
+					title: 'Full Dual-School Reading',
+					body: 'Unlock your complete long-form report: past-year validations, ten-year DaYun arcs, dedicated chapters for love, career, health, and family, plus a shareable Portrait Card.'
+				},
+				{
+					num: 'Step 03 · Living Rhythm',
+					title: 'Timing Cycles & Companion',
+					body: 'Check your day, week, month, and year windows as seasons change, or open Companion dialogue to talk through real-life decisions with your chart in context.'
+				},
+				{
+					num: 'Step 04 · Open Method',
+					title: 'Built-In BaZi Library & Clear Reasoning',
+					body: 'Every insight shows the classical basis behind it, paired with an approachable BaZi Library so you can explore every concept at your own pace.'
+				}
+			],
+			cta: 'Try Yinyang Agent Free',
+			detailLink: 'Read full product story'
 		}
 	},
 	productYinyang: {
 		meta: {
-			title: 'Yinyang Agent — memenow',
+			title: 'Yinyang Agent — Four Pillars BaZi & Life Rhythm Companion · memenow',
 			description:
-				'Yinyang Agent: Four Pillars BaZi readings with dual-school synthesis, Timing Cycles, and Companion dialogue.',
-			ogTitle: 'Yinyang Agent — memenow',
+				'Yinyang Agent turns classical Four Pillars BaZi into clear modern prose. Featuring solar-term charting, dual-school ZiPing & MangPai synthesis, Timing Cycles, and Companion dialogue.',
+			ogTitle: 'Yinyang Agent — Read the pattern in your birth moment',
 			ogDescription:
-				'Long-form BaZi readings with full reasoning chains, multi-scale Timing Cycles, and chart-aware dialogue.'
+				'Start free with base BaZi charting and daily prompts. Go deeper with long-form readings, multi-scale Timing Cycles, and chart-aware Companion dialogue.'
 		},
 		hero: {
-			eyebrowLeft: 'Product · Yinyang Agent',
-			eyebrowRight: 'Live',
-			title: 'Understand the terrain. Make room for your choices.',
-			lede: 'BaZi is a cultural framework for reflection, not a fixed verdict on the future. Yinyang Agent brings together deterministic charting, dual-school synthesis, Timing Cycles, and Companion dialogue so you can read and reflect at your own pace.',
-			cue: 'Scroll · 01 Reading & cycles'
+			eyebrowLeft: 'PRODUCT · YINYANG AGENT',
+			eyebrowRight: 'FREE TO START',
+			title: 'Ancient Four Pillars wisdom, written in clear modern prose',
+			lede: 'BaZi is not a fatalistic verdict on your future—it is a time-tested lens for self-observation. Yinyang Agent brings together solar-term charting, dual-school classical synthesis, Timing Cycles, and Companion dialogue so you can navigate the present with calm clarity.',
+			primaryCta: 'Read My Chart Free',
+			cue: 'Scroll · 01 Experience & rhythm'
 		},
 		reading: {
 			number: '01',
-			label: 'Reading & cycles',
-			title: 'Built to live beyond the first reading.',
-			lede: 'Start with a free daily prompt or two free base readings each calendar month. Your Four Pillars chart and narrative overview sit side by side—clear enough to grasp at a glance, ready to go deeper when the question calls for it.',
-			p1: 'Unlocking the full report opens the complete reasoning chain with confidence scores, concrete past-year validations, ten-year DaYun cycles, and dedicated chapters for love, career, health, and family. A built-in BaZi Library lets you verify every term and school of thought, and you can generate a shareable Portrait Card of your chart.',
-			p2: 'Your natal reading stays saved in your account as a stable reference. As time moves, Timing Cycles maps your day, week, month, and year windows alongside your chart, while Companion dialogue and thematic Channels let you return with new questions and decisions whenever you need perspective.'
+			label: 'Experience & Rhythm',
+			title: 'From first recognition to everyday perspective',
+			lede: 'Start effortlessly with a free daily prompt or two free base chart readings each month. Your Four Pillars chart and narrative overview sit side by side—clear at first glance, rich when you want to dive deeper.',
+			p1: 'When you unlock the full report, the system calibrates your chart to your birth timezone and astronomical solar terms, unfolding concrete past-year validations, ten-year DaYun cycles, and practical chapters on love, career, health, and family. You can also explore any concept in the built-in BaZi Library or save a custom Portrait Card of your chart.',
+			p2: 'Every reading stays saved in your account as a lasting personal reference. As time moves forward, Timing Cycles maps your day, week, month, and year windows, while Companion dialogue and dedicated life Channels let you return with new questions whenever a decision arises.',
+			highlights: [
+				{
+					num: '01 · Zero Jargon Wall',
+					title: 'Chart and story, side by side',
+					body: 'Complex stems, branches, and elemental dynamics are translated into warm, contemporary prose anyone can read on day one.'
+				},
+				{
+					num: '02 · Grounded in Your Past',
+					title: 'Validated against real years you lived',
+					body: 'By tracing pivotal past years before looking ahead, your reading anchors future cycles in lived reality rather than generic guesswork.'
+				},
+				{
+					num: '03 · Multi-Scale Timing',
+					title: 'Day, week, month & year windows',
+					body: 'Connect your long-term natal structure to the rhythm of today, this week, or this year—so you know when to push forward and when to recharge.'
+				},
+				{
+					num: '04 · Context-Aware Dialogue',
+					title: 'A companion that knows your chart',
+					body: 'Bring relationship questions, career trade-offs, or restless thoughts into a private conversation that already understands your natal pattern.'
+				}
+			]
 		},
 		pullquote: {
 			quote:
-				'A reading worth keeping deserves a second look—so every report is reviewed against your chart before it reaches you.',
-			attribution: 'Yinyang Agent review discipline'
+				'A good reading never makes the choice for you. It clears the fog so you can hear what you already know.',
+			attribution: 'Yinyang Agent design principle'
 		},
 		discipline: {
 			number: '02',
-			label: 'Synthesis & review',
-			title: 'Why a reading takes a few minutes.',
-			lede: 'Rushed output turns BaZi into generic fortune-telling. Writing a document you can trust and revisit requires both structured synthesis and verification.',
-			p1: 'When you submit your birth details, Yinyang Agent casts your deterministic chart and runs two classical reasoning tracks in parallel: ZiPing (weighing elemental balance and climate) and MangPai (tracing structural momentum). After synthesizing the draft, a dedicated whole-document review checks every claim and year against the underlying chart data, repairing unsupported statements before publication. Those extra minutes are deliberate.',
-			cta: 'Visit yinyang.memenow.xyz'
+			label: 'Craft & Method',
+			title: 'Why a reading takes a few minutes to craft',
+			lede: 'Instant one-second horoscopes are built to be skimmed and forgotten. Writing a personal document worth keeping takes deliberate synthesis and cross-checking.',
+			p1: 'When you submit your birth details, Yinyang Agent first locks in your astronomical solar-term chart, then explores it through two complementary classical schools in parallel: ZiPing (elemental balance and seasonal climate) and MangPai (structural momentum and life work). Before your report is finalized, a dedicated review pass cross-checks every claim and year boundary against your chart facts, removing vague filler. Those few quiet minutes are what make every paragraph hold up.',
+			comparison: {
+				caption: 'How Yinyang Agent compares to generic AI horoscopes',
+				genericLabel: 'Generic AI Horoscopes / Chatbots',
+				yinyangLabel: 'Yinyang Agent',
+				rows: [
+					{
+						feature: 'Chart Foundation',
+						generic:
+							'Often ignores birth timezone and solar terms, miscalculating the Four Pillars',
+						yinyang: 'Calibrated to exact birth IANA timezone and astronomical solar terms'
+					},
+					{
+						feature: 'Interpretive Depth',
+						generic: 'Single-prompt Barnum statements that sound the same for everyone',
+						yinyang: 'Dual-school ZiPing + MangPai synthesis tailored to your specific structure'
+					},
+					{
+						feature: 'Consistency & Trust',
+						generic: 'Contradicts itself across prompts with unverified claims',
+						yinyang: 'Cross-checked against chart facts and anchored in past-year validations'
+					},
+					{
+						feature: 'Ongoing Companion',
+						generic: 'One-off chat transcript that disappears once you close the tab',
+						yinyang: 'Saved natal reference paired with live Timing Cycles and Companion dialogue'
+					}
+				]
+			},
+			cta: 'Start Your Reading at yinyang.memenow.xyz'
 		}
 	},
 	company: {
 		meta: {
-			title: 'Company — memenow',
+			title: 'About — memenow',
 			description:
-				'memenow is a studio incorporated in Lewes, Delaware, founded in 2024, building AI you can audit and return to.',
-			ogTitle: 'Company — memenow',
+				'Founded in 2024, memenow is an independent AI studio across the United States and Greater China, bridging classical Eastern philosophy with transparent modern AI.',
+			ogTitle: 'About — memenow',
 			ogDescription:
-				'A studio incorporated in Lewes, Delaware. Founded 2024. AI you can audit and return to.'
+				'An independent studio founded in 2024. Bridging Eastern cultural wisdom and quiet engineering craft to build AI worth returning to.'
 		},
 		hero: {
-			eyebrowLeft: 'Company · Lewes, Delaware',
-			eyebrowRight: 'Est. 2024',
-			title: 'A small studio.',
-			lede: 'Founded 2024 in Lewes, Delaware. We build AI you can audit and return to, and we ship slowly because the work is meant to last.',
-			cue: 'Scroll · 01 The studio'
+			eyebrowLeft: 'ABOUT · MEMENOW STUDIO',
+			eyebrowRight: 'EST. 2024',
+			title: 'An independent studio built on quiet craft',
+			lede: 'Founded in 2024 across the United States and Greater China. We bring together classical cultural wisdom and transparent modern AI—shipping thoughtfully so every work endures.',
+			cue: 'Scroll · 01 Who we are'
 		},
 		studio: {
 			number: '01',
-			label: 'The studio',
-			title: 'Where we are.',
-			lede: 'Founded 2024 in Lewes, Delaware. A small distributed team across the United States and Greater China.',
-			p1: 'Lewes is where the paperwork lives. Our team works across time zones in the United States and Greater China, brought together by a shared preference for quiet craft over loud announcements.',
+			label: 'Who We Are',
+			title: 'Across time zones, united by restraint and care',
+			lede: 'Incorporated in Delaware, with a small team working across the United States and Greater China.',
+			p1: 'Our team brings together AI systems engineers and longtime students of Eastern philosophy and humanities. We share a distaste for noisy hype and dark-pattern growth, preferring to work quietly until complex technology feels warm, grounded, and genuinely helpful in everyday life.',
 			stats: {
 				foundedYear: '2024',
-				foundedLabel: 'Founded',
-				foundedDesc: 'Incorporated in Lewes, Delaware.',
+				foundedLabel: 'Studio Founded',
+				foundedDesc: 'Built on the principle of honest reasoning and lasting companionship.',
 				productCount: '1',
-				productLabel: 'Flagship product',
-				productDesc: 'Yinyang Agent: an auditable BaZi reading you can return to.',
+				productLabel: 'Flagship Release',
+				productDesc: 'Yinyang Agent: Four Pillars readings, Timing Cycles, and Companion dialogue.',
 				teamRegion: 'US · CN',
-				teamLabel: 'Distributed',
-				teamDesc: 'A small team across the United States and Greater China.'
+				teamLabel: 'Cross-Cultural Team',
+				teamDesc: 'Bridging modern AI rigor with classical Eastern perspective.'
 			}
 		},
 		work: {
 			number: '02',
-			label: 'The work',
-			title: 'How we work.',
-			lede: 'Choose a question worth asking, then make it quietly answerable—small in scope, auditable in method, and built with patience.',
-			p1: 'We focus on problems where AI can be a genuine long-term partner—where the output is something you keep, revisit, and question again as life changes. Yinyang Agent is our first answer to that test. Every product has to earn its place by remaining useful a month after the first click, not just the first minute.',
-			p2: "When we don't know something, we say so. When a model stops working, we stop it. When a timeline needs to be longer, we extend it. None of this is heroic — it's just the discipline that makes the work worth trusting.",
+			label: 'How We Work',
+			title: 'How we shape every release',
+			lede: 'Choose a human question worth caring about, then answer it with clarity, restraint, and patience.',
+			p1: 'We only build where AI can be a genuine long-term companion—where what you read is worth saving, revisiting, and questioning again as life changes. Yinyang Agent is our first answer to that test. We never use fear-mongering hooks or artificial urgency, because work that respects the reader earns trust naturally.',
+			p2: 'Where classical reasoning offers clear signal, we show how we got there. Where life remains open, we leave room for your own agency. When a model or feature needs more care, we take the time to get it right.',
 			timeline: [
 				{
 					year: '2024',
-					title: 'Studio founded',
-					body: 'memenow incorporated in Lewes, Delaware. First principles written down before the first line of code.'
+					title: 'Studio Founded',
+					body: 'memenow established with a clear charter: no fear-based fortune-telling, no disposable AI novelties—only grounded, revisitable work.'
 				},
 				{
 					year: '2024–2026',
-					title: 'Yinyang Agent',
-					body: 'First product shipped and expanded: dual-school BaZi synthesis, whole-document verification, multi-scale Timing Cycles, and chart-aware Companion dialogue.'
+					title: 'Yinyang Agent Live & Evolving',
+					body: 'Our flagship product launches and expands with solar-term charting, dual-school ZiPing and MangPai synthesis, whole-report verification, multi-scale Timing Cycles, and Companion dialogue.'
 				}
 			]
 		},
 		contact: {
 			number: '03',
 			label: 'Contact',
-			title: 'Get in touch.',
-			lede: 'For press, partnerships, or thoughtful questions, write to ',
+			title: 'We would love to hear from you',
+			lede: 'For press, partnerships, or thoughtful feedback, write to ',
 			ledeEnd: '.',
-			p1: 'We read every message and answer it ourselves — no auto-responders, no form letters.',
+			p1: 'We read every message and reply ourselves—no ticket queues, no auto-responders, and no canned form letters.',
 			cta: 'Email hello@memenow.xyz'
 		}
 	},
 	privacy: {
 		meta: {
-			title: 'Privacy — memenow',
-			description: 'memenow.xyz privacy notice.'
+			title: 'Privacy Policy — memenow',
+			description: 'Privacy notice for memenow.xyz.'
 		},
 		hero: {
-			eyebrowLeft: 'Legal · Privacy',
-			eyebrowRight: 'Updated 2026-10-15',
-			title: "What we collect. What we don't.",
-			lede: 'memenow.xyz collects almost nothing on this site. Here is exactly what — and what stays in your browser.',
-			cue: 'Scroll · Read the notice'
+			eyebrowLeft: 'LEGAL · PRIVACY',
+			eyebrowRight: 'UPDATED 2026-10-15',
+			title: 'Your privacy, in plain words',
+			lede: 'memenow.xyz collects almost nothing on this website. Here is a clear breakdown of what stays entirely in your browser and what minimal metadata keeps the site running.',
+			cue: 'Scroll · Privacy notice'
 		},
 		scope: {
 			number: '01',
 			label: 'Scope',
-			title: 'What this notice covers.',
-			body: 'Public pages on <strong>memenow.xyz</strong>. Products may have their own notices on their own surfaces.'
+			title: 'What this notice covers',
+			body: 'This notice applies to the public pages on <strong>memenow.xyz</strong>. Individual products (such as Yinyang Agent) provide their own dedicated privacy notices and data controls on their respective surfaces.'
 		},
 		data: {
 			number: '02',
-			label: 'Data',
-			title: 'What we collect.',
-			p1: 'No third-party analytics, no advertising. Your theme and motion preferences (the browser-local keys <code class="prose-code">memenow.theme</code> and <code class="prose-code">memenow.motion</code>) never leave your browser. Your language preference (<code class="prose-code">memenow.locale</code>) lives in a cookie and is sent with each request — used only to render pages in the language you chose.',
-			p2: "Cloudflare records standard request metadata (IP, user agent, timestamp, path) for operations and security. We don't link it to any identity."
+			label: 'Data Practices',
+			title: 'What we collect and what stays local',
+			p1: 'We run no third-party analytics and no advertising trackers on this site. Your theme and motion preferences (the browser-local keys <code class="prose-code">memenow.theme</code> and <code class="prose-code">memenow.motion</code>) stay inside your browser and are never transmitted to us. Your language preference (<code class="prose-code">memenow.locale</code>) is stored in a first-party cookie and used solely to serve pages in the language you selected.',
+			p2: 'Our infrastructure provider, Cloudflare, logs standard request metadata (IP address, user agent, timestamp, and path) for security and reliability. We never link those operational logs to any personal identity.'
 		},
 		email: {
 			number: '03',
-			label: 'Email',
-			title: 'Email and contact.',
-			body: 'Write to <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a> — the conversation is used only to reply, and we never share it with third parties.'
+			label: 'Email & Contact',
+			title: 'When you write to us',
+			body: 'If you email <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a>, your message and address are used only to reply to you. We never sell or share your correspondence with third parties.'
 		}
 	},
 	terms: {
 		meta: {
-			title: 'Terms — memenow',
-			description: 'memenow.xyz terms of use.'
+			title: 'Terms of Use — memenow',
+			description: 'Terms of use for memenow.xyz.'
 		},
 		hero: {
-			eyebrowLeft: 'Legal · Terms',
-			eyebrowRight: 'Updated 2026-10-15',
-			title: 'Plain terms, short.',
-			lede: 'The conditions under which we publish memenow.xyz.',
-			cue: 'Scroll · Read the terms'
+			eyebrowLeft: 'LEGAL · TERMS',
+			eyebrowRight: 'UPDATED 2026-10-15',
+			title: 'Clear, straightforward terms',
+			lede: 'The terms that govern your use of memenow.xyz, written in plain language.',
+			cue: 'Scroll · Terms of use'
 		},
 		scope: {
 			number: '01',
 			label: 'Scope',
-			title: 'What these terms cover.',
-			body: 'Public pages on <strong>memenow.xyz</strong>. By accessing or using the site, you acknowledge and agree to these terms. Specific products (such as Yinyang Agent) may have their own terms on their own surfaces.'
+			title: 'What these terms cover',
+			body: 'These terms govern the public pages on <strong>memenow.xyz</strong>. By accessing or using this site, you acknowledge and agree to these terms. Individual products (such as Yinyang Agent) publish their own product-specific terms on their respective surfaces.'
 		},
 		disclaimer: {
 			number: '02',
-			label: 'Cultural & AI disclaimer',
-			title: 'Cultural inquiry and AI-generated content.',
-			p1: 'The Bazi, Four Pillars, and Five Elements content offered by memenow products (including Yinyang Agent) draws on classical Chinese philosophy and cultural heritage. It is offered for cultural reflection and self-exploration only, and <strong>does not constitute, and cannot replace, professional medical, psychological, legal, or financial advice</strong>.',
-			p2: 'This content is generated by AI models and is narrative interpretation by nature; we make no promise, express or implied, of absolute accuracy or of any predictive outcome. Any decision you make based on it is your own judgment and your own responsibility.'
+			label: 'Cultural & AI Disclaimer',
+			title: 'Cultural reflection and AI-generated content',
+			p1: 'The BaZi, Four Pillars, and Five Elements content offered by memenow products (including Yinyang Agent) draws on classical Chinese philosophy and cultural heritage. It is provided for personal reflection and cultural exploration only, and <strong>does not constitute, and cannot replace, professional medical, psychological, legal, or financial advice</strong>.',
+			p2: 'Readings are generated with AI models as narrative interpretations; we make no guarantee, express or implied, of predictive certainty. Your chart is a lens for reflection—every real-world decision remains your own judgment and responsibility.'
 		},
 		warranty: {
 			number: '03',
-			label: 'No warranty',
-			title: 'Provided as is.',
-			body: 'The site is provided on an "as is" basis. We work to keep it accurate and online but make no warranty as to fitness, completeness, or currency.'
+			label: 'Service Basis',
+			title: 'Provided as is',
+			body: 'This site is provided on an "as is" basis. While we care deeply about accuracy and uptime, we make no warranties regarding fitness for a particular purpose, completeness, or uninterrupted availability.'
 		},
 		offer: {
 			number: '04',
-			label: 'No offer',
-			title: 'Nothing here is a financial offer.',
-			body: 'Nothing on this site is an offer to sell, a solicitation to buy, or a recommendation regarding any security, fund interest, or financial instrument.'
+			label: 'No Financial Offer',
+			title: 'Nothing here is a financial solicitation',
+			body: 'Nothing on this site constitutes an offer to sell, a solicitation to buy, or a recommendation regarding any security, fund interest, or financial instrument.'
 		},
 		ip: {
 			number: '05',
-			label: 'Intellectual property',
-			title: 'Marks, copyright, and your personal readings.',
-			p1: '"memenow" and the memenow mark are trademarks of memenow; other marks belong to their respective owners. Site text and design © memenow.',
-			p2: 'Personal readings you generate in products such as Yinyang Agent are yours to read permanently, keep personally, and share non-commercially.'
+			label: 'Intellectual Property',
+			title: 'Trademarks, site design, and your personal readings',
+			p1: '"memenow" and the memenow mark are trademarks of memenow; other marks belong to their respective owners. Site copy and visual design © memenow.',
+			p2: 'Personal readings you generate in products such as Yinyang Agent remain yours to read permanently, keep privately, and share for non-commercial purposes.'
 		},
 		law: {
 			number: '06',
-			label: 'Governing law',
-			title: 'Delaware, United States.',
-			p1: 'These terms are governed by Delaware law, without regard to conflict-of-laws principles.',
-			p2: 'We may update these terms; the "Updated" date in the header reflects the most recent revision. Questions: <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a>.'
+			label: 'Governing Law',
+			title: 'Applicable law and updates',
+			p1: 'These terms are governed by the laws of the State of Delaware, United States, without regard to conflict-of-laws principles.',
+			p2: 'We may update these terms as our studio evolves; the "Updated" date in the header reflects the latest revision. Questions are always welcome at <a href="mailto:hello@memenow.xyz">hello@memenow.xyz</a>.'
 		}
 	},
 	error: {
 		meta: {
 			title: '{status} · memenow'
 		},
-		notFoundTitle: 'This path leads nowhere.',
-		serverErrorTitle: 'A break in the signal.',
-		notFoundLede: 'The page you were looking for has moved, been renamed, or never existed.',
-		serverErrorLede: 'Something went wrong on our end. Try again in a moment.',
-		returnHome: 'Return home',
+		notFoundTitle: 'This page has drifted out of view',
+		serverErrorTitle: 'A momentary ripple in the signal',
+		notFoundLede:
+			'The page you were looking for may have moved, changed its name, or never existed. Let’s take you back to familiar ground.',
+		serverErrorLede: 'Something went wrong on our end. Please give it a moment and try again.',
+		returnHome: 'Return Home',
 		statusLabel: 'Status · {status}',
-		notFoundLabel: 'Not found',
-		errorLabel: 'Error',
+		notFoundLabel: 'Page not found',
+		errorLabel: 'Service error',
 		cueHome: 'Return · Home'
 	}
 };

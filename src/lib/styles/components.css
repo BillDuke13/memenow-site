@@ -171,6 +171,15 @@
 	transition-delay: calc(var(--motion-stagger) * 4);
 }
 
+.c-editorial-hero__cta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--spacing-6);
+	margin-top: var(--spacing-2);
+	transition-delay: calc(var(--motion-stagger) * 5);
+}
+
 .c-editorial-hero__cue {
 	display: inline-flex;
 	align-items: center;
@@ -436,6 +445,25 @@
 	justify-content: center;
 }
 
+.c-chapter__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--spacing-6);
+}
+
+.c-chapter__more-link {
+	font-family: var(--font-body);
+	font-size: var(--type-small);
+	color: var(--text-secondary);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.c-chapter__more-link:hover {
+	color: var(--accent);
+}
+
 /* ── Chapter alignment: left ─────────────────────────── */
 
 .c-chapter--align-left .c-chapter__head {
@@ -545,6 +573,7 @@
 	width: 100%;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: clamp(2rem, 4vw, 3.5rem) clamp(2rem, 5vw, 5rem);
+	margin-top: clamp(1.5rem, 3vh, 2.5rem);
 }
 
 .c-stack-grid__item {
@@ -1240,6 +1269,7 @@
 	width: 100%;
 	max-width: 100%;
 	overflow-x: auto;
+	margin-top: clamp(1.5rem, 3vh, 2.5rem);
 }
 
 .c-comparison__table {
