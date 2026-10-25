@@ -334,11 +334,14 @@ a:hover {
 }
 
 /* ── CJK typography adjustments ───────────────────────
-   Hanzi has no case and reads worse tracked: zero every letter-spacing token
-   (component literals route through these tokens) and give CJK body text more
-   leading — ~1.7+ is the CJK norm (DESIGN.md typography). The matching label
-   uppercase/tracking reset lives at the end of components.css. */
-:lang(zh) {
+   Han, kana, and Hangul have no case and read worse tracked: zero every
+   letter-spacing token (component literals route through these tokens) and give
+   CJK body text more leading — ~1.7+ is the CJK norm (DESIGN.md typography).
+   `:lang(zh)` also matches zh-TW. The matching label uppercase/tracking reset
+   lives at the end of components.css. */
+:lang(zh),
+:lang(ja),
+:lang(ko) {
 	--ls-display: 0;
 	--ls-heading: 0;
 	--ls-overline: 0;
@@ -349,6 +352,43 @@ a:hover {
 
 /* CJK display type reads cramped at the Latin 0.95 line-height. */
 :lang(zh) .c-editorial-hero__title,
-:lang(zh) .c-chapter__title {
+:lang(zh) .c-chapter__title,
+:lang(ja) .c-editorial-hero__title,
+:lang(ja) .c-chapter__title,
+:lang(ko) .c-editorial-hero__title,
+:lang(ko) .c-chapter__title {
 	line-height: 1.18;
+}
+
+/* Per-script CJK font stacks. Han characters have regional glyph forms, so
+   Traditional Chinese, Japanese, and Korean pages must not fall through to the
+   Simplified Chinese faces in :root. Latin runs keep Newsreader / Inter first;
+   CJK stays on system fonts only (no webfont). */
+:lang(zh-TW) {
+	--font-display:
+		'Newsreader Variable', 'Newsreader', 'Noto Serif TC', 'Source Han Serif TC', 'Songti TC',
+		PMingLiU, Georgia, 'Times New Roman', serif;
+	--font-body:
+		'Inter Variable', 'Inter', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', -apple-system,
+		'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+:lang(ja) {
+	--font-display:
+		'Newsreader Variable', 'Newsreader', 'Noto Serif JP', 'Source Han Serif JP',
+		'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, Georgia, 'Times New Roman', serif;
+	--font-body:
+		'Inter Variable', 'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+		'Yu Gothic', YuGothic, Meiryo, -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+}
+
+:lang(ko) {
+	--font-display:
+		'Newsreader Variable', 'Newsreader', 'Noto Serif KR', 'Source Han Serif KR', AppleMyungjo,
+		'Nanum Myeongjo', Batang, Georgia, 'Times New Roman', serif;
+	--font-body:
+		'Inter Variable', 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic',
+		-apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+	/* Korean breaks between words (eojeol), not inside them. */
+	word-break: keep-all;
 }

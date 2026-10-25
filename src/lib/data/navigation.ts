@@ -1,4 +1,4 @@
-import { messages, type Locale } from '$lib/i18n';
+import type { Locale, MessageSchema } from '$lib/i18n';
 
 export interface NavLink {
 	label: string;
@@ -12,22 +12,23 @@ export interface NavLink {
 	match?: string[];
 }
 
+type CommonCopy = MessageSchema['common'];
+
 // Single source of truth for site navigation. `getPrimaryNav` feeds the
 // floating dock; `getFooterSections` feeds the bottom-of-page navigation.
 // Add new top-level routes here, not by editing the components. All hrefs
-// carry the locale prefix — the locale is an explicit parameter because
-// there is no ambient "current locale" outside the component tree.
-export function getHomeLink(locale: Locale): NavLink {
-	return { label: messages[locale].common.home, href: `/${locale}` };
+// carry the locale prefix; labels come from the active dictionary the caller
+// already holds (only that dictionary exists on the client).
+export function getHomeLink(locale: Locale, common: CommonCopy): NavLink {
+	return { label: common.home, href: `/${locale}` };
 }
 
-export function getPrimaryNav(locale: Locale): NavLink[] {
-	const t = messages[locale].common;
+export function getPrimaryNav(locale: Locale, common: CommonCopy): NavLink[] {
 	return [
-		{ label: t.products, href: `/${locale}/products` },
-		{ label: t.company, href: `/${locale}/company` },
+		{ label: common.products, href: `/${locale}/products` },
+		{ label: common.company, href: `/${locale}/company` },
 		{
-			label: t.legal,
+			label: common.legal,
 			href: `/${locale}/terms`,
 			match: [`/${locale}/privacy`, `/${locale}/terms`]
 		}
@@ -39,21 +40,20 @@ export interface FooterSection {
 	links: NavLink[];
 }
 
-export function getFooterSections(locale: Locale): FooterSection[] {
-	const t = messages[locale].common;
+export function getFooterSections(locale: Locale, common: CommonCopy): FooterSection[] {
 	return [
 		{
-			title: t.brand,
+			title: common.brand,
 			links: [
-				{ label: t.products, href: `/${locale}/products` },
-				{ label: t.company, href: `/${locale}/company` }
+				{ label: common.products, href: `/${locale}/products` },
+				{ label: common.company, href: `/${locale}/company` }
 			]
 		},
 		{
-			title: t.legal,
+			title: common.legal,
 			links: [
-				{ label: t.privacy, href: `/${locale}/privacy` },
-				{ label: t.terms, href: `/${locale}/terms` },
+				{ label: common.privacy, href: `/${locale}/privacy` },
+				{ label: common.terms, href: `/${locale}/terms` },
 				{ label: 'GitHub', href: 'https://github.com/memenow', external: true }
 			]
 		}

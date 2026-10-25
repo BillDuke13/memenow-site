@@ -1,11 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { createI18nContext } from '$lib/i18n';
+import { zh } from '$lib/i18n/dictionaries/zh';
 import ThemeSwitch from './ThemeSwitch.svelte';
 
 const STORAGE_KEY = 'memenow.theme';
 
-// Mounted without a layout ancestor, useLocale() falls back to DEFAULT_LOCALE
-// — so the aria-labels asserted below are the Chinese ones.
+// Mounted outside the root layout, so the i18n context is supplied directly —
+// with the Chinese dictionary, which is why the asserted aria-labels are Chinese.
+const context = createI18nContext({ locale: () => 'zh', messages: () => zh });
 describe('ThemeSwitch', () => {
 	beforeEach(() => {
 		document.documentElement.setAttribute('data-theme', 'light');
@@ -19,12 +22,12 @@ describe('ThemeSwitch', () => {
 
 	it('mirrors the document theme on mount', async () => {
 		document.documentElement.setAttribute('data-theme', 'dark');
-		const screen = await render(ThemeSwitch);
+		const screen = await render(ThemeSwitch, { context });
 		await expect.element(screen.getByLabelText('切换至明亮主题')).toBeInTheDocument();
 	});
 
 	it('toggles to dark on click and persists to localStorage', async () => {
-		const screen = await render(ThemeSwitch);
+		const screen = await render(ThemeSwitch, { context });
 		const button = screen.getByLabelText('切换至暗色主题');
 		await button.click();
 		expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
@@ -33,7 +36,7 @@ describe('ThemeSwitch', () => {
 	});
 
 	it('toggles back to light on a second click', async () => {
-		const screen = await render(ThemeSwitch);
+		const screen = await render(ThemeSwitch, { context });
 		await screen.getByLabelText('切换至暗色主题').click();
 		await screen.getByLabelText('切换至明亮主题').click();
 		expect(document.documentElement.getAttribute('data-theme')).toBe('light');
@@ -47,7 +50,7 @@ describe('ThemeSwitch', () => {
 			throw new DOMException('Quota exceeded', 'QuotaExceededError');
 		});
 		try {
-			const screen = await render(ThemeSwitch);
+			const screen = await render(ThemeSwitch, { context });
 			await screen.getByLabelText('切换至暗色主题').click();
 			expect(setItem).toHaveBeenCalledWith(STORAGE_KEY, 'dark');
 			expect(document.documentElement.getAttribute('data-theme')).toBe('dark');

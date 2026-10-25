@@ -52,15 +52,17 @@ describe('GET /sitemap.xml', () => {
 		}
 	});
 
-	it('annotates every url with zh, en, and x-default alternates', async () => {
+	it('annotates every url with BCP 47 alternates for each locale plus x-default', async () => {
 		const response = await invoke();
 		const body = await response.text();
 		const urlBlocks = body.match(/<url>[\s\S]*?<\/url>/g) ?? [];
 		expect(urlBlocks.length).toBe(ROUTES.length * SUPPORTED_LOCALES.length);
 		for (const block of urlBlocks) {
 			expect(block.match(/<xhtml:link /g)?.length).toBe(SUPPORTED_LOCALES.length + 1);
-			expect(block).toContain('hreflang="zh"');
-			expect(block).toContain('hreflang="en"');
+			for (const hreflang of ['zh-Hans', 'zh-Hant', 'en', 'ja', 'ko', 'es', 'fr']) {
+				expect(block).toContain(`hreflang="${hreflang}"`);
+			}
+			expect(block).toContain(`hreflang="zh-Hant" href="${BASE}/zh-TW`);
 			expect(block).toContain(`hreflang="x-default" href="${BASE}/"`);
 		}
 	});

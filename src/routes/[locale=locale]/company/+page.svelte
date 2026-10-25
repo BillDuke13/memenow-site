@@ -4,11 +4,11 @@
 	import ArtifactCta from '$lib/components/ui/ArtifactCta.svelte';
 	import Timeline from '$lib/components/editorial/Timeline.svelte';
 	import StatCard from '$lib/components/editorial/StatCard.svelte';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useMessages } from '$lib/i18n';
 	import { SITE_ORIGIN } from '$lib/data/site';
 
-	const locale = useLocale();
-	const t = $derived(messages[locale()].company);
+	const messages = useMessages();
+	const t = $derived(messages().company);
 </script>
 
 <svelte:head>

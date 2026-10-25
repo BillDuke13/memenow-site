@@ -4,11 +4,12 @@
 	import ArtifactCta from '$lib/components/ui/ArtifactCta.svelte';
 	import Pullquote from '$lib/components/editorial/Pullquote.svelte';
 	import ComparisonTable from '$lib/components/editorial/ComparisonTable.svelte';
-	import { messages, useLocale } from '$lib/i18n';
-	import { SITE_ORIGIN } from '$lib/data/site';
+	import { useLocale, useMessages } from '$lib/i18n';
+	import { SITE_ORIGIN, yinyangAppHref } from '$lib/data/site';
 
 	const locale = useLocale();
-	const t = $derived(messages[locale()].productYinyang);
+	const messages = useMessages();
+	const t = $derived(messages().productYinyang);
 	const comparisonColumns = $derived([
 		{ key: 'generic', label: t.discipline.comparison.genericLabel },
 		{ key: 'yinyang', label: t.discipline.comparison.yinyangLabel, highlight: true }
@@ -33,7 +34,7 @@
 >
 	{#snippet cta()}
 		<ArtifactCta
-			href="https://yinyang.memenow.xyz"
+			href={yinyangAppHref(locale())}
 			palette="celestial"
 			size="lg"
 			rel="noopener noreferrer"
@@ -86,7 +87,7 @@
 
 	{#snippet cta()}
 		<ArtifactCta
-			href="https://yinyang.memenow.xyz"
+			href={yinyangAppHref(locale())}
 			palette="celestial"
 			size="lg"
 			rel="noopener noreferrer"

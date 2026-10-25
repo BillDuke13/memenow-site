@@ -18,30 +18,45 @@
 		setViewTransitionUpdating
 	} from '$lib/utils/motion';
 	import { resolveRouteFamily } from '$lib/utils/route-family';
-	import { provideLocale, stripLocalePrefix, withLocale } from '$lib/i18n';
+	import {
+		LOCALE_META,
+		SUPPORTED_LOCALES,
+		provideI18n,
+		stripLocalePrefix,
+		withLocale
+	} from '$lib/i18n';
 	import { SITE_ORIGIN } from '$lib/data/site';
 
 	let { data, children } = $props();
 
-	// Locale lives in a per-tree context getter (never module state): SSR
-	// requests stay isolated, and SPA language switches re-run the layout load
-	// (see +layout.server.ts), which every consumer reacts to via useLocale().
-	provideLocale(() => data.locale);
+	// Locale and dictionary live in per-tree context getters (never module
+	// state): SSR requests stay isolated, and SPA language switches re-run the
+	// layout load (see +layout.server.ts), which every consumer reacts to via
+	// useLocale() / useMessages().
+	provideI18n({ locale: () => data.locale, messages: () => data.messages });
 
 	// Absolute canonical URL for the current path (pathname only — query and hash
 	// are never canonical here). Also feeds og:url so shared cards resolve back to
 	// the page. noindex routes still get a canonical, which is valid.
 	const canonical = $derived(new URL(page.url.pathname, SITE_ORIGIN).href);
 
-	// hreflang/og:locale pairs, emitted only on locale-prefixed URLs — a
+	// hreflang/og:locale sets, emitted only on locale-prefixed URLs — a
 	// prefix-less 404 must not claim alternates. x-default points at the
 	// negotiating root (`/` redirects by cookie / Accept-Language).
 	const barePath = $derived(stripLocalePrefix(page.url.pathname).path);
 	const isLocalizedUrl = $derived(stripLocalePrefix(page.url.pathname).locale !== null);
-	const zhHref = $derived(new URL(withLocale(barePath, 'zh'), SITE_ORIGIN).href);
-	const enHref = $derived(new URL(withLocale(barePath, 'en'), SITE_ORIGIN).href);
-	const ogLocale = $derived(data.locale === 'zh' ? 'zh_CN' : 'en_US');
-	const ogLocaleAlternate = $derived(data.locale === 'zh' ? 'en_US' : 'zh_CN');
+	const alternates = $derived(
+		SUPPORTED_LOCALES.map((locale) => ({
+			hreflang: LOCALE_META[locale].hreflang,
+			href: new URL(withLocale(barePath, locale), SITE_ORIGIN).href
+		}))
+	);
+	const ogLocale = $derived(LOCALE_META[data.locale].ogLocale);
+	const ogLocaleAlternates = $derived(
+		SUPPORTED_LOCALES.filter((locale) => locale !== data.locale).map(
+			(locale) => LOCALE_META[locale].ogLocale
+		)
+	);
 
 	let scrollProgress = $state(0);
 
@@ -114,7 +129,7 @@
 		if (typeof document === 'undefined') return;
 		// SSR seeds both attributes via hooks.server.ts; this effect is the SPA
 		// navigation fallback (hooks don't run on client-side transitions).
-		document.documentElement.lang = data.locale;
+		document.documentElement.lang = LOCALE_META[data.locale].htmlLang;
 		const family = resolveRouteFamily(page.url.pathname);
 		document.documentElement.setAttribute('data-route-family', family);
 	});
@@ -124,11 +139,14 @@
 	<link rel="canonical" href={canonical} />
 	<meta property="og:url" content={canonical} />
 	{#if isLocalizedUrl}
-		<link rel="alternate" hreflang="zh" href={zhHref} />
-		<link rel="alternate" hreflang="en" href={enHref} />
+		{#each alternates as alternate (alternate.hreflang)}
+			<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+		{/each}
 		<link rel="alternate" hreflang="x-default" href="{SITE_ORIGIN}/" />
 		<meta property="og:locale" content={ogLocale} />
-		<meta property="og:locale:alternate" content={ogLocaleAlternate} />
+		{#each ogLocaleAlternates as alternate (alternate)}
+			<meta property="og:locale:alternate" content={alternate} />
+		{/each}
 	{/if}
 </svelte:head>
 

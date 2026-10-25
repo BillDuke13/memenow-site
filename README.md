@@ -8,7 +8,8 @@ The official website of [memenow](https://memenow.xyz) — an editorial single-n
 [SvelteKit](https://svelte.dev/) site deployed to
 [Cloudflare Workers](https://developers.cloudflare.com/workers/) via
 [`@sveltejs/adapter-cloudflare`](https://kit.svelte.dev/docs/adapter-cloudflare).
-The site is bilingual: Chinese under `/zh`, English under `/en` (see the i18n note below).
+The site is served in seven languages — `/zh` (Simplified Chinese), `/zh-TW` (Traditional Chinese), `/en`, `/ja`, `/ko`, `/es`, `/fr` — matching the
+Yinyang Agent app (see the i18n note below).
 
 ## Requirements
 
@@ -50,7 +51,8 @@ The standard pre-push gate is `pnpm lint && pnpm check && pnpm test` (also wrapp
 
 ## Routes
 
-All content routes live under a locale prefix: `/zh/…` (Chinese) and `/en/…` (English).
+All content routes live under a locale prefix (`/zh/…`, `/zh-TW/…`, `/en/…`, `/ja/…`, `/ko/…`,
+`/es/…`, `/fr/…`). Case variants such as `/zh-tw/…` answer with a 301 to the canonical prefix.
 The bare legacy paths (`/`, `/products`, …) answer with a 302 to the negotiated locale;
 retired routes (`/products/quant`, `/disclaimer`) answer with a 301 to their replacement.
 
@@ -88,7 +90,7 @@ src/
     │   ├── layout/         # AppShell, WorldLayer, Footer, FloatingDock
     │   └── ui/             # ThemeSwitch, MotionSwitch, LocaleSwitch, ArtifactCta
     ├── data/               # navigation.ts, sitemap.ts, site.ts (single sources of truth)
-    ├── i18n/               # messages.ts (zh/en dictionary), locale.svelte.ts (context), locale-path.ts (URL/redirect plumbing)
+    ├── i18n/               # locale-registry.ts (locale list + metadata), dictionaries/ (one file per locale), messages.server.ts (server-only aggregate), locale.svelte.ts (context), locale-path.ts (URL/redirect plumbing)
     ├── styles/             # tokens.css, scene.css, layout.css, components.css, world-layer.css
     ├── utils/              # cn.ts (clsx wrapper), motion.ts (Lenis + reveal/magnetic), route-family.ts, redirects.ts
     └── types.ts            # Shared types (SceneImage for hero/chapter imagery)
@@ -123,12 +125,15 @@ run `pnpm cf-typegen` to refresh `src/worker-configuration.d.ts`).
 - **Theming** — `app.html` ships an inline boot script that reads `localStorage.memenow.theme`
   (or system preference) and sets `data-theme` before SvelteKit hydrates, avoiding a
   light-flash. `ThemeSwitch.svelte` toggles and persists the choice.
-- **i18n** — every content URL carries its locale (`/zh`, `/en`). `hooks.server.ts` resolves
+- **i18n** — every content URL carries its locale (`/zh`, `/zh-TW`, `/en`, `/ja`, `/ko`, `/es`,
+  `/fr`; the list and per-locale metadata live in `$lib/i18n/locale-registry.ts`). `hooks.server.ts` resolves
   the locale per request (URL prefix wins, then the `memenow.locale` cookie, then
   Accept-Language), redirects legacy URLs accordingly, and rewrites `<html lang>`.
   The root layout provides the locale as a component-tree context getter
-  (`useLocale()` from `$lib/i18n`); all copy lives in `$lib/i18n/messages.ts`, a typed
-  zh/en dictionary. There is no module-level locale state — SSR requests stay isolated.
+  (`useLocale()` from `$lib/i18n`). Copy lives in `$lib/i18n/dictionaries/<locale>.ts`, typed
+  against the zh schema; `+layout.server.ts` sends only the active dictionary to the browser,
+  and components read it via `useMessages()`. There is no module-level locale state — SSR
+  requests stay isolated.
 - **Route-family fog** — `hooks.server.ts` rewrites `data-route-family="pending"` in
   `app.html` to `legal` (privacy/terms) or `threshold` (everything else) for SSR;
   the root layout's `$effect` mirrors that on SPA navigations.

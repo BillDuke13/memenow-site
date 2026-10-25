@@ -3,11 +3,12 @@
 	import Chapter from '$lib/components/home/Chapter.svelte';
 	import ArtifactCta from '$lib/components/ui/ArtifactCta.svelte';
 	import Pullquote from '$lib/components/editorial/Pullquote.svelte';
-	import { messages, useLocale } from '$lib/i18n';
-	import { SITE_ORIGIN } from '$lib/data/site';
+	import { useLocale, useMessages } from '$lib/i18n';
+	import { SITE_ORIGIN, yinyangAppHref } from '$lib/data/site';
 
 	const locale = useLocale();
-	const t = $derived(messages[locale()].home);
+	const messages = useMessages();
+	const t = $derived(messages().home);
 </script>
 
 <svelte:head>
@@ -29,7 +30,7 @@
 	{#snippet cta()}
 		<div class="c-chapter__actions">
 			<ArtifactCta
-				href="https://yinyang.memenow.xyz"
+				href={yinyangAppHref(locale())}
 				palette="celestial"
 				size="lg"
 				rel="noopener noreferrer"
@@ -68,7 +69,7 @@
 	{#snippet cta()}
 		<div class="c-chapter__actions">
 			<ArtifactCta
-				href="https://yinyang.memenow.xyz"
+				href={yinyangAppHref(locale())}
 				palette="celestial"
 				size="lg"
 				rel="noopener noreferrer"

@@ -1,30 +1,58 @@
 /**
- * Locale as component-tree context. The root layout provides a getter bound
- * to its `data.locale`; every consumer below reads through that getter inside
+ * Locale and dictionary as component-tree context. The root layout provides
+ * getters bound to its `data`; every consumer reads through them inside
  * `$derived`, so a cross-language navigation (which re-runs the layout load)
  * re-renders all copy without a full reload.
  *
  * This is deliberately context, not module state: context is per
  * component-tree (per request during SSR), so two concurrent visitors with
- * different languages can never see each other's locale — the failure mode of
- * a module-level `$state` on a shared Worker isolate.
+ * different languages can never see each other's copy — the failure mode of a
+ * module-level `$state` on a shared Worker isolate.
  */
 
 import { getContext, setContext } from 'svelte';
-import { DEFAULT_LOCALE, type Locale } from './messages';
+import type { MessageSchema } from './dictionaries/zh';
+import type { Locale } from './locale-registry';
 
-const LOCALE_CONTEXT = Symbol('memenow.locale');
+const I18N_CONTEXT = Symbol('memenow.i18n');
 
 export type LocaleGetter = () => Locale;
+export type MessagesGetter = () => MessageSchema;
 
-export function provideLocale(get: LocaleGetter): void {
-	setContext(LOCALE_CONTEXT, get);
+export interface I18nContext {
+	locale: LocaleGetter;
+	messages: MessagesGetter;
+}
+
+export function provideI18n(context: I18nContext): void {
+	setContext(I18N_CONTEXT, context);
 }
 
 /**
- * Returns the locale getter. The DEFAULT_LOCALE fallback keeps isolated
- * component tests (vitest-browser-svelte, no layout ancestor) mountable.
+ * Context map for mounting a component outside the root layout (component
+ * tests): `render(Component, { context: createI18nContext({ … }) })`.
  */
+export function createI18nContext(context: I18nContext): Map<symbol, I18nContext> {
+	// A one-shot mount option consumed by Svelte's `mount({ context })`, never
+	// mutated or observed — SvelteMap reactivity would be meaningless here.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
+	return new Map([[I18N_CONTEXT, context]]);
+}
+
+function readI18n(): I18nContext {
+	const context = getContext<I18nContext | undefined>(I18N_CONTEXT);
+	if (!context) {
+		throw new Error(
+			'i18n context is missing: provideI18n() must run in an ancestor (the root layout), or mount with createI18nContext().'
+		);
+	}
+	return context;
+}
+
 export function useLocale(): LocaleGetter {
-	return getContext<LocaleGetter | undefined>(LOCALE_CONTEXT) ?? (() => DEFAULT_LOCALE);
+	return readI18n().locale;
+}
+
+export function useMessages(): MessagesGetter {
+	return readI18n().messages;
 }

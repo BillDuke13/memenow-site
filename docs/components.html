@@ -208,11 +208,15 @@
 						<td><code>LocaleSwitch</code></td>
 						<td><code>lib/components/ui/LocaleSwitch.svelte</code></td>
 						<td>
-							Bilingual link (<code>中 / EN</code>) in the floating dock. Points at the current page
-							under the other locale (<code>switchLocalePath</code>), so SSR renders the correct
-							destination with no client state and crawlers can discover the alternate language.
-							Carries <code>data-sveltekit-noscroll</code> to keep reading position; the server
-							persists the choice to the <code>memenow.locale</code> cookie.
+							Language menu in the floating dock: a native <code>&lt;details&gt;</code> disclosure
+							whose trigger shows the active locale's short label (<code>简</code>, <code>EN</code>,
+							<code>日</code>…) and opens upward to seven plain links, one per locale, each pointing
+							at the current page in that language (<code>switchLocalePath</code>) with
+							<code>hreflang</code>, <code>lang</code>, and <code>aria-current</code>. Works without
+							JavaScript; with it, Escape (focus returns to the trigger), an outside click, or
+							picking a language closes the menu. Links carry <code>data-sveltekit-noscroll</code>;
+							the server persists the choice to the <code>memenow.locale</code> cookie. The footer
+							repeats the seven links as a no-JS path.
 						</td>
 					</tr>
 					<tr>

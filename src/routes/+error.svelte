@@ -2,14 +2,15 @@
 	import { page } from '$app/state';
 	import EditorialHero from '$lib/components/home/EditorialHero.svelte';
 	import ArtifactCta from '$lib/components/ui/ArtifactCta.svelte';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useLocale, useMessages } from '$lib/i18n';
 
 	// `status` must be the HTTP status from `page`, not the deprecated global
 	// `window.status` (an empty string) that an undeclared `status` would resolve to.
 	const status = $derived(page.status);
 	const isNotFound = $derived(page.status === 404);
 	const locale = useLocale();
-	const t = $derived(messages[locale()].error);
+	const messages = useMessages();
+	const t = $derived(messages().error);
 
 	const title = $derived(isNotFound ? t.notFoundTitle : t.serverErrorTitle);
 	// Always render pre-defined user-facing copy. `page.error?.message` can leak

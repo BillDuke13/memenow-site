@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { startLenis, stopLenis } from '$lib/utils/motion';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useMessages } from '$lib/i18n';
 
-	const locale = useLocale();
-	const labels = $derived(messages[locale()].common.motion);
+	const messages = useMessages();
+	const labels = $derived(messages().common.motion);
 
 	// `data-motion` on <html> is the single runtime source of truth: the app.html
 	// boot script seeds it from localStorage('memenow.motion') or the OS

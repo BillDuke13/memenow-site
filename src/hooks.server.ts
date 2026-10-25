@@ -1,7 +1,7 @@
 import { building } from '$app/environment';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { resolveRouteFamily } from '$lib/utils/route-family';
-import { decideLocaleRedirect, stripLocalePrefix } from '$lib/i18n';
+import { decideLocaleRedirect, LOCALE_META, stripLocalePrefix } from '$lib/i18n';
 
 // app.html ships `data-route-family="pending"` as an explicit placeholder so a
 // missed substitution is observable (no scene fog) instead of silently locked
@@ -38,10 +38,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const family = resolveRouteFamily(event.url.pathname);
+	const htmlLang = LOCALE_META[decision.locale].htmlLang;
 	return resolve(event, {
 		transformPageChunk: ({ html }) =>
 			html
 				.replace(ROUTE_FAMILY_PLACEHOLDER, `data-route-family="${family}"`)
-				.replace(/lang="[a-zA-Z-]*"/, `lang="${decision.locale}"`)
+				.replace(/lang="[a-zA-Z-]*"/, `lang="${htmlLang}"`)
 	});
 };

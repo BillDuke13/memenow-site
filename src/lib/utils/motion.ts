@@ -128,7 +128,9 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
 
 	if (splitWords) {
 		const text = node.textContent ?? '';
-		const hasCJK = /[\u4e00-\u9fa5]/.test(text);
+		// Han (incl. Extension A) and Japanese kana. Hangul is excluded on
+		// purpose: Korean separates words with spaces, so per-word reveal fits.
+		const hasCJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(text);
 		// DESIGN.md: "Word-by-word English reveals MUST NOT be copied onto Chinese
 		// or other unspaced scripts. Use a line or block reveal."
 		if (hasCJK) {

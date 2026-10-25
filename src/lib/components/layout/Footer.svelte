@@ -1,13 +1,29 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import MemenowMark from '$lib/components/brand/MemenowMark.svelte';
 	import { getFooterSections } from '$lib/data/navigation';
-	import { messages, useLocale } from '$lib/i18n';
+	import {
+		LOCALE_META,
+		SUPPORTED_LOCALES,
+		switchLocalePath,
+		useLocale,
+		useMessages
+	} from '$lib/i18n';
 
 	const year = new Date().getFullYear();
 	const locale = useLocale();
-	const sections = $derived(getFooterSections(locale()));
-	const legalCopy = $derived(
-		messages[locale()].common.rightsReserved.replace('{year}', String(year))
+	const messages = useMessages();
+	const common = $derived(messages().common);
+	const sections = $derived(getFooterSections(locale(), common));
+	const legalCopy = $derived(common.rightsReserved.replace('{year}', String(year)));
+	// Every language as a plain link: the no-JS path to switch languages and a
+	// crawlable list of alternates for the current page.
+	const languages = $derived(
+		SUPPORTED_LOCALES.map((target) => ({
+			locale: target,
+			href: switchLocalePath(page.url.pathname, page.url.search, target),
+			meta: LOCALE_META[target]
+		}))
 	);
 </script>
 
@@ -31,6 +47,20 @@
 					{/each}
 				</div>
 			{/each}
+			<div class="c-footer__col">
+				<span class="c-footer__title">{common.language.footerTitle}</span>
+				{#each languages as language (language.locale)}
+					<a
+						href={language.href}
+						hreflang={language.meta.hreflang}
+						lang={language.meta.htmlLang}
+						aria-current={language.locale === locale() ? 'true' : undefined}
+						data-sveltekit-noscroll
+					>
+						{language.meta.nativeName}
+					</a>
+				{/each}
+			</div>
 		</div>
 		<div class="c-footer__legal">
 			<span>{legalCopy}</span>

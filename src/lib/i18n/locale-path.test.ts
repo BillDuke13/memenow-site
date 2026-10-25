@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	decideLocaleRedirect,
 	negotiateLocale,
+	resolveLanguageTag,
 	stripLocalePrefix,
 	switchLocalePath,
 	withLocale
@@ -11,11 +12,17 @@ describe('stripLocalePrefix', () => {
 	it('strips a supported prefix', () => {
 		expect(stripLocalePrefix('/zh/products')).toEqual({ locale: 'zh', path: '/products' });
 		expect(stripLocalePrefix('/en/company')).toEqual({ locale: 'en', path: '/company' });
+		expect(stripLocalePrefix('/zh-TW/products/yinyang')).toEqual({
+			locale: 'zh-TW',
+			path: '/products/yinyang'
+		});
+		expect(stripLocalePrefix('/ja/terms')).toEqual({ locale: 'ja', path: '/terms' });
 	});
 
 	it("maps a bare prefix to '/'", () => {
 		expect(stripLocalePrefix('/zh')).toEqual({ locale: 'zh', path: '/' });
 		expect(stripLocalePrefix('/en')).toEqual({ locale: 'en', path: '/' });
+		expect(stripLocalePrefix('/zh-TW')).toEqual({ locale: 'zh-TW', path: '/' });
 	});
 
 	it('leaves unprefixed paths untouched', () => {
@@ -30,6 +37,7 @@ describe('stripLocalePrefix', () => {
 
 	it('is case-sensitive', () => {
 		expect(stripLocalePrefix('/ZH')).toEqual({ locale: null, path: '/ZH' });
+		expect(stripLocalePrefix('/zh-tw')).toEqual({ locale: null, path: '/zh-tw' });
 	});
 });
 
@@ -50,6 +58,12 @@ describe('switchLocalePath', () => {
 
 	it('swaps the locale root', () => {
 		expect(switchLocalePath('/zh', '', 'en')).toBe('/en');
+		expect(switchLocalePath('/zh-TW', '', 'ko')).toBe('/ko');
+	});
+
+	it('swaps into and out of a hyphenated locale', () => {
+		expect(switchLocalePath('/zh-TW/company', '', 'fr')).toBe('/fr/company');
+		expect(switchLocalePath('/es/terms', '', 'zh-TW')).toBe('/zh-TW/terms');
 	});
 
 	it('prefixes an unprefixed path (error pages outside a locale)', () => {
@@ -65,22 +79,53 @@ describe('negotiateLocale', () => {
 	it('prefers a valid cookie over the header', () => {
 		expect(negotiateLocale('zh', 'en-US')).toBe('zh');
 		expect(negotiateLocale('en', 'zh-CN')).toBe('en');
+		expect(negotiateLocale('zh-TW', 'ja-JP')).toBe('zh-TW');
 	});
 
 	it('ignores an invalid cookie', () => {
-		expect(negotiateLocale('fr', 'zh-CN')).toBe('zh');
+		expect(negotiateLocale('de', 'zh-CN')).toBe('zh');
+		// Cookie values are exact: a case variant is not a stored preference.
+		expect(negotiateLocale('zh-tw', 'ko-KR')).toBe('ko');
 	});
 
 	it('reads the first Accept-Language tag only', () => {
 		expect(negotiateLocale(undefined, 'zh-CN,zh;q=0.9')).toBe('zh');
 		// Regression: a naive includes("zh") would pick zh here.
 		expect(negotiateLocale(undefined, 'en-US,en;q=0.9,zh;q=0.8')).toBe('en');
+		expect(negotiateLocale(undefined, 'ja;q=0.9,en;q=0.8')).toBe('ja');
+	});
+
+	it('maps each supported language family', () => {
+		expect(negotiateLocale(undefined, 'ja-JP')).toBe('ja');
+		expect(negotiateLocale(undefined, 'ko-KR')).toBe('ko');
+		expect(negotiateLocale(undefined, 'es-MX')).toBe('es');
+		expect(negotiateLocale(undefined, 'fr-CA')).toBe('fr');
+		expect(negotiateLocale(undefined, 'en-GB')).toBe('en');
+	});
+
+	it('routes Chinese by script first, then region', () => {
+		expect(negotiateLocale(undefined, 'zh-TW')).toBe('zh-TW');
+		expect(negotiateLocale(undefined, 'zh-HK')).toBe('zh-TW');
+		expect(negotiateLocale(undefined, 'zh-MO')).toBe('zh-TW');
+		expect(negotiateLocale(undefined, 'zh-Hant')).toBe('zh-TW');
+		expect(negotiateLocale(undefined, 'zh-Hant-CN')).toBe('zh-TW');
+		expect(negotiateLocale(undefined, 'zh-Hans-TW')).toBe('zh');
+		expect(negotiateLocale(undefined, 'zh-SG')).toBe('zh');
+		expect(negotiateLocale(undefined, 'zh')).toBe('zh');
 	});
 
 	it('falls back to en when nothing is known', () => {
 		expect(negotiateLocale(undefined, undefined)).toBe('en');
 		expect(negotiateLocale(undefined, '')).toBe('en');
-		expect(negotiateLocale(undefined, 'fr-FR')).toBe('en');
+		expect(negotiateLocale(undefined, 'de-DE')).toBe('en');
+		expect(negotiateLocale(undefined, '*')).toBe('en');
+	});
+});
+
+describe('resolveLanguageTag', () => {
+	it('returns null for unsupported tags', () => {
+		expect(resolveLanguageTag('pt-BR')).toBeNull();
+		expect(resolveLanguageTag('')).toBeNull();
 	});
 });
 
@@ -149,10 +194,49 @@ describe('decideLocaleRedirect', () => {
 			locale: 'zh'
 		});
 		expect(decideLocaleRedirect({ pathname: '/en' })).toEqual({ kind: 'render', locale: 'en' });
+		expect(decideLocaleRedirect({ pathname: '/ja/products' })).toEqual({
+			kind: 'render',
+			locale: 'ja'
+		});
+		expect(decideLocaleRedirect({ pathname: '/zh-TW/products/yinyang' })).toEqual({
+			kind: 'render',
+			locale: 'zh-TW'
+		});
+	});
+
+	it('301s a case-variant locale prefix to its canonical spelling', () => {
+		expect(decideLocaleRedirect({ pathname: '/zh-tw/company' })).toEqual({
+			kind: 'redirect',
+			status: 301,
+			location: '/zh-TW/company'
+		});
+		expect(decideLocaleRedirect({ pathname: '/EN', search: '?ref=x' })).toEqual({
+			kind: 'redirect',
+			status: 301,
+			location: '/en?ref=x'
+		});
+		expect(decideLocaleRedirect({ pathname: '/ZH-TW/' })).toEqual({
+			kind: 'redirect',
+			status: 301,
+			location: '/zh-TW'
+		});
+	});
+
+	it('negotiates legacy redirects into the new locales', () => {
+		expect(decideLocaleRedirect({ pathname: '/', acceptLanguage: 'ja-JP,ja;q=0.9' })).toEqual({
+			kind: 'redirect',
+			status: 302,
+			location: '/ja'
+		});
+		expect(decideLocaleRedirect({ pathname: '/company', acceptLanguage: 'zh-HK' })).toEqual({
+			kind: 'redirect',
+			status: 302,
+			location: '/zh-TW/company'
+		});
 	});
 
 	it('renders unknown paths with the negotiated locale (404 downstream)', () => {
-		expect(decideLocaleRedirect({ pathname: '/fr/products' })).toEqual({
+		expect(decideLocaleRedirect({ pathname: '/de/products' })).toEqual({
 			kind: 'render',
 			locale: 'en'
 		});

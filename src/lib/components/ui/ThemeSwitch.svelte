@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useMessages } from '$lib/i18n';
 
 	type Theme = 'light' | 'dark';
 
-	const locale = useLocale();
-	const labels = $derived(messages[locale()].common.theme);
+	const messages = useMessages();
+	const labels = $derived(messages().common.theme);
 	let theme = $state<Theme>('light');
 
 	// app.html boot script seeds `data-theme` from localStorage or system pref.

@@ -3,11 +3,11 @@
 	import Footer from './Footer.svelte';
 	import FloatingDock from './FloatingDock.svelte';
 	import WorldLayer from './WorldLayer.svelte';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useMessages } from '$lib/i18n';
 
 	let { children, footer = true }: { children: Snippet; footer?: boolean } = $props();
-	const locale = useLocale();
-	const common = $derived(messages[locale()].common);
+	const messages = useMessages();
+	const common = $derived(messages().common);
 </script>
 
 <WorldLayer />

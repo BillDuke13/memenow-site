@@ -20,10 +20,14 @@ SvelteKit application deployed to Cloudflare Workers via `@sveltejs/adapter-clou
   `components`, `world-layer`) and declares the `dark` custom variant. No Tailwind plugins are
   currently registered. Components in this repo are primarily `.c-*` BEM primitives consuming design
   tokens from `lib/styles/tokens.css`, not raw Tailwind utility soup.
-- **Bilingual URLs (`/zh` + `/en`).** Every content URL carries its locale under the
+- **Seven-locale URLs (`/zh`, `/zh-TW`, `/en`, `/ja`, `/ko`, `/es`, `/fr`).** The locale list and
+  per-locale metadata (hreflang, `og:locale`, `<html lang>`, Yinyang app path) live in
+  `src/lib/i18n/locale-registry.ts` — never hard-code a locale list. Every content URL carries its locale under the
   `[locale=locale]` route segment (matcher: `src/params/locale.ts`). All copy lives in the
-  typed zh/en dictionary `src/lib/i18n/messages.ts`; components read the locale through
-  `useLocale()` (a component-tree context getter provided by the root layout — never
+  per-locale dictionaries in `src/lib/i18n/dictionaries/` (zh owns `MessageSchema`). The aggregate
+  `messages.server.ts` is server-only: `+layout.server.ts` sends just the active dictionary, and
+  components read it through `useMessages()` / `useLocale()` (component-tree context getters
+  provided by the root layout — never
   module-level state, which would leak across SSR requests). `hooks.server.ts` owns the
   redirect policy: retired URLs 301, legacy unprefixed page URLs 302 to the negotiated
   locale (cookie `memenow.locale`, else the first Accept-Language tag). `src/lib/i18n/locale-path.ts`
@@ -114,8 +118,9 @@ Chromium is not installed (`pnpm exec playwright install chromium`).
   - `components/ui/` — `ThemeSwitch`, `MotionSwitch`, `LocaleSwitch`, `ArtifactCta`. (The coral diamond is a CSS primitive,
     `.c-seal` in `components.css`, not a component.)
   - `data/` — `navigation.ts` (primary nav + footer), `sitemap.ts` (URL × lastmod), `site.ts` (canonical origin).
-  - `i18n/` — `messages.ts` (typed zh/en dictionary; zh owns the schema), `locale.svelte.ts`
-    (`provideLocale`/`useLocale` context), `locale-path.ts` (prefix stripping, negotiation,
+  - `i18n/` — `locale-registry.ts` (locale list + metadata), `dictionaries/` (one typed file per
+    locale; zh owns the schema), `messages.server.ts` (server-only aggregate), `locale.svelte.ts`
+    (`provideI18n`/`useLocale`/`useMessages` context), `locale-path.ts` (prefix stripping, negotiation,
     redirect decisions — pure and unit-tested).
   - `styles/` — `tokens.css` (palette, type, spacing, motion), `scene.css` (per-route fog), `layout.css`
     (`.l-*` utilities), `components.css` (`.c-*` primitives), `world-layer.css` (persistent Tai Chi underlay + per-route fog carrier).

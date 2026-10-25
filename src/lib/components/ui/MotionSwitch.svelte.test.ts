@@ -9,12 +9,15 @@ vi.mock('$lib/utils/motion', async (importOriginal) => {
 	return { ...(actual as object), startLenis: lenis.start, stopLenis: lenis.stop };
 });
 
+import { createI18nContext } from '$lib/i18n';
+import { zh } from '$lib/i18n/dictionaries/zh';
 import MotionSwitch from './MotionSwitch.svelte';
 
 const STORAGE_KEY = 'memenow.motion';
 
-// Mounted without a layout ancestor, useLocale() falls back to DEFAULT_LOCALE
-// — so the aria-labels asserted below are the Chinese ones.
+// Mounted outside the root layout, so the i18n context is supplied directly —
+// with the Chinese dictionary, which is why the asserted aria-labels are Chinese.
+const context = createI18nContext({ locale: () => 'zh', messages: () => zh });
 describe('MotionSwitch', () => {
 	beforeEach(() => {
 		document.documentElement.setAttribute('data-motion', 'full');
@@ -30,12 +33,12 @@ describe('MotionSwitch', () => {
 
 	it('mirrors the document motion state on mount', async () => {
 		document.documentElement.setAttribute('data-motion', 'reduced');
-		const screen = await render(MotionSwitch);
+		const screen = await render(MotionSwitch, { context });
 		await expect.element(screen.getByLabelText('允许动效')).toBeInTheDocument();
 	});
 
 	it('reduces motion on click, persists the choice, and stops Lenis', async () => {
-		const screen = await render(MotionSwitch);
+		const screen = await render(MotionSwitch, { context });
 		await screen.getByLabelText('减弱动效').click();
 		expect(document.documentElement.getAttribute('data-motion')).toBe('reduced');
 		expect(localStorage.getItem(STORAGE_KEY)).toBe('reduced');
@@ -44,7 +47,7 @@ describe('MotionSwitch', () => {
 	});
 
 	it('re-allows motion on a second click and restarts Lenis', async () => {
-		const screen = await render(MotionSwitch);
+		const screen = await render(MotionSwitch, { context });
 		await screen.getByLabelText('减弱动效').click();
 		await screen.getByLabelText('允许动效').click();
 		expect(document.documentElement.getAttribute('data-motion')).toBe('full');
@@ -59,7 +62,7 @@ describe('MotionSwitch', () => {
 			throw new DOMException('Quota exceeded', 'QuotaExceededError');
 		});
 		try {
-			const screen = await render(MotionSwitch);
+			const screen = await render(MotionSwitch, { context });
 			await screen.getByLabelText('减弱动效').click();
 			expect(setItem).toHaveBeenCalledWith(STORAGE_KEY, 'reduced');
 			expect(document.documentElement.getAttribute('data-motion')).toBe('reduced');

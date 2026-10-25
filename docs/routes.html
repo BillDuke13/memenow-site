@@ -32,8 +32,9 @@
 				<h1>Routes &amp; content</h1>
 				<p class="lede">
 					Every public URL on memenow.xyz, the chapter it represents, and the file that owns the
-					copy. The site is bilingual — Chinese under <code>/zh</code>, English under
-					<code>/en</code> — and reads as one continuous narrative; additions belong in this map.
+					copy. The site is served in seven languages — <code>/zh</code>, <code>/zh-TW</code>,
+					<code>/en</code>, <code>/ja</code>, <code>/ko</code>, <code>/es</code>, <code>/fr</code> —
+					and reads as one continuous narrative; additions belong in this map.
 				</p>
 			</header>
 
@@ -94,12 +95,16 @@
 			</table>
 			<p>
 				<code>[locale]</code> is a SvelteKit param with a matcher
-				(<code>src/params/locale.ts</code>) accepting exactly <code>zh</code> or <code>en</code>.
-				Every page consumes copy from <code>src/lib/i18n/messages.ts</code> via
-				<code>useLocale()</code>, and the root layout emits per-locale canonical, hreflang, and
-				<code>og:locale</code> tags. <code>hooks.server.ts</code> owns the redirect policy: retired
-				URLs (<code>/products/quant</code>, <code>/disclaimer</code>) 301 to their localized
-				replacement; legacy unprefixed page URLs 302 to the negotiated locale (the
+				(<code>src/params/locale.ts</code>) accepting exactly the codes in
+				<code>src/lib/i18n/locale-registry.ts</code> (<code>zh</code>, <code>zh-TW</code>,
+				<code>en</code>, <code>ja</code>, <code>ko</code>, <code>es</code>, <code>fr</code>); case
+				variants such as <code>/zh-tw/…</code> 301 to the canonical spelling. Every page consumes
+				the active dictionary (one file per locale under <code>src/lib/i18n/dictionaries/</code>,
+				sent by <code>+layout.server.ts</code>) via <code>useMessages()</code>, and the root layout
+				emits per-locale canonical, hreflang, and <code>og:locale</code> tags.
+				<code>hooks.server.ts</code> owns the redirect policy: retired URLs
+				(<code>/products/quant</code>, <code>/disclaimer</code>) 301 to their localized replacement;
+				legacy unprefixed page URLs 302 to the negotiated locale (the
 				<code>memenow.locale</code> cookie, else the first Accept-Language tag). The pure decision
 				functions live in <code>src/lib/i18n/locale-path.ts</code>.
 			</p>
@@ -197,7 +202,7 @@
 				ships as a static file inside the asset bundle. Its URL list lives in
 				<code>src/lib/data/sitemap.ts</code> as a <code>ReadonlyArray</code> of
 				<code>[path, lastmod]</code> pairs over <em>logical</em> (unprefixed) routes; the handler
-				expands each route across both locales with mutual <code>xhtml:link</code> hreflang
+				expands each route across every locale with mutual <code>xhtml:link</code> hreflang
 				alternates plus an <code>x-default</code> pointing at the negotiating root.
 				<strong>Hand-bump the lastmod when content meaningfully changes</strong> — search crawlers
 				discount uniform "everything updated today" stamps.
@@ -236,9 +241,10 @@ export const SITEMAP_ROUTES: ReadonlyArray&lt;readonly [path: string, lastmod: s
 					<code>og:image</code>.
 				</li>
 				<li>
-					Add the page's copy to <em>both</em> locales in <code>src/lib/i18n/messages.ts</code> —
-					the zh object owns the schema, so the en entry won't typecheck until it matches
-					key-for-key.
+					Add the page's copy to <em>every</em> dictionary in
+					<code>src/lib/i18n/dictionaries/</code> — the zh dictionary owns
+					<code>MessageSchema</code>, so no other locale typechecks until it matches key-for-key;
+					<code>dictionaries.test.ts</code> also rejects empty strings and markup drift.
 				</li>
 				<li>
 					Decide the route family. If the URL belongs in the legal family, add it to
@@ -268,10 +274,12 @@ export const SITEMAP_ROUTES: ReadonlyArray&lt;readonly [path: string, lastmod: s
 
 			<div class="callout">
 				<strong>Editorial language</strong>
-				The site is bilingual: Simplified Chinese (/zh) and standard American English (/en). The
-				committed English copy is the factual baseline; Chinese copy stays plain and faithful to it
-				— no claims, features, or imagery that the English source doesn't make. Keep chapter titles
-				short and write ledes at human-thoughtful cadence rather than marketing copy.
+				The site ships seven languages: Simplified Chinese (/zh), Traditional Chinese (/zh-TW),
+				standard American English (/en), Japanese (/ja), Korean (/ko), Spanish (/es), and French
+				(/fr). Product terms follow the yinyang-agent-ui terminology catalog. The committed English
+				copy is the factual baseline; every other locale stays plain and faithful to it — no claims,
+				features, or imagery that the English source doesn't make. Keep chapter titles short and
+				write ledes at human-thoughtful cadence rather than marketing copy.
 			</div>
 
 			<footer class="meta">

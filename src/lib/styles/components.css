@@ -959,7 +959,7 @@
 
 .c-footer__inner {
 	display: grid;
-	grid-template-columns: 1.2fr 1fr 1fr;
+	grid-template-columns: 1.2fr repeat(3, 1fr);
 	gap: var(--spacing-8);
 }
 
@@ -979,6 +979,10 @@
 	color: var(--text-primary);
 	text-decoration: underline;
 	text-decoration-color: var(--accent);
+}
+
+.c-footer__col a[aria-current='true'] {
+	color: var(--text-primary);
 }
 
 .c-footer__title {
@@ -1397,13 +1401,13 @@
 }
 
 /* ── CJK labels ────────────────────────────────────────
-   Hanzi has no case: never uppercase zh labels (it would only mangle the
-   Latin runs inside them, e.g. "Yinyang Agent" → "YINYANG AGENT"), and skip
-   the Latin overline tracking entirely (tokens are already zeroed under
-   :lang(zh) in tokens.css; `normal` here covers anything not token-routed).
-   See DESIGN.md typography: "Do not force uppercase onto scripts that have
-   no case." */
-:lang(zh)
+   Han, kana, and Hangul have no case: never uppercase CJK labels (it would
+   only mangle the Latin runs inside them, e.g. "Yinyang Agent" → "YINYANG
+   AGENT"), and skip the Latin overline tracking entirely (tokens are already
+   zeroed for these languages in tokens.css; `normal` here covers anything not
+   token-routed). `:lang(zh)` also matches zh-TW. See DESIGN.md typography:
+   "Do not force uppercase onto scripts that have no case." */
+:is(:lang(zh), :lang(ja), :lang(ko))
 	:where(
 		.c-editorial-hero__top,
 		.c-editorial-hero__cue,

@@ -1,21 +1,32 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getHomeLink, getPrimaryNav, type NavLink } from '$lib/data/navigation';
-	import { messages, switchLocalePath, useLocale, type Locale } from '$lib/i18n';
+	import {
+		LOCALE_META,
+		SUPPORTED_LOCALES,
+		switchLocalePath,
+		useLocale,
+		useMessages
+	} from '$lib/i18n';
 	import ThemeSwitch from '$lib/components/ui/ThemeSwitch.svelte';
 	import MotionSwitch from '$lib/components/ui/MotionSwitch.svelte';
 	import LocaleSwitch from '$lib/components/ui/LocaleSwitch.svelte';
 
 	const locale = useLocale();
+	const messages = useMessages();
 	const current = $derived(locale());
-	const home = $derived(getHomeLink(current));
-	const nav = $derived(getPrimaryNav(current));
-	const common = $derived(messages[current].common);
+	const common = $derived(messages().common);
+	const home = $derived(getHomeLink(current, common));
+	const nav = $derived(getPrimaryNav(current, common));
 
-	const switchTarget: Locale = $derived(current === 'zh' ? 'en' : 'zh');
-	const switchHref = $derived(switchLocalePath(page.url.pathname, page.url.search, switchTarget));
-	const switchLabel = $derived(
-		switchTarget === 'en' ? common.locale.switchToEnglish : common.locale.switchToChinese
+	const localeOptions = $derived(
+		SUPPORTED_LOCALES.map((target) => ({
+			locale: target,
+			href: switchLocalePath(page.url.pathname, page.url.search, target),
+			name: LOCALE_META[target].nativeName,
+			hreflang: LOCALE_META[target].hreflang,
+			lang: LOCALE_META[target].htmlLang
+		}))
 	);
 
 	function matches(path: string, pathname: string): boolean {
@@ -61,7 +72,12 @@
 
 	<span class="c-dock__divider" aria-hidden="true"></span>
 
-	<LocaleSwitch href={switchHref} label={switchLabel} text={switchTarget === 'en' ? 'EN' : '中'} />
+	<LocaleSwitch
+		{current}
+		currentLabel={LOCALE_META[current].shortLabel}
+		label={common.language.menuLabel}
+		options={localeOptions}
+	/>
 	<ThemeSwitch />
 	<MotionSwitch />
 </nav>

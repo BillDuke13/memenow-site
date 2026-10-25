@@ -2,11 +2,11 @@
 	import EditorialHero from '$lib/components/home/EditorialHero.svelte';
 	import Chapter from '$lib/components/home/Chapter.svelte';
 	import TrustedHtml from '$lib/components/ui/TrustedHtml.svelte';
-	import { messages, useLocale } from '$lib/i18n';
+	import { useMessages } from '$lib/i18n';
 	import { SITE_ORIGIN } from '$lib/data/site';
 
-	const locale = useLocale();
-	const t = $derived(messages[locale()].privacy);
+	const messages = useMessages();
+	const t = $derived(messages().privacy);
 </script>
 
 <svelte:head>
